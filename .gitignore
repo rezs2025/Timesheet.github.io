@@ -1,0 +1,4 @@
+# Ignore dependencies installed via npm
+node_modules
+build
+.envbuild/
