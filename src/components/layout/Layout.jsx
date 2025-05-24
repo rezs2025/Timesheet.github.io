@@ -7,7 +7,6 @@ import {
   Box,
   Toolbar,
   Typography,
-  Button,
   IconButton,
   Drawer,
   List,
@@ -28,7 +27,6 @@ import {
   Assessment as AssessmentIcon,
   Business as BusinessIcon,
   Logout as LogoutIcon,
-  AccountCircle as AccountCircleIcon,
   Person as PersonIcon,
   Security as SecurityIcon,
   CheckCircle as CheckCircleIcon
