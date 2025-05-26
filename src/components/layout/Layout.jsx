@@ -31,12 +31,16 @@ import {
   Security as SecurityIcon,
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
+import useLoggedUser from "@/hooks/useLoggedUser";
+
 
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const { user, loadingUser } = useLoggedUser();
+  
   
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
@@ -63,10 +67,14 @@ const Layout = () => {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
     { text: 'Registro de Tiempo', icon: <AccessTimeIcon />, path: '/time-entry' },
     { text: 'Resumen Semanal', icon: <AssessmentIcon />, path: '/weekly-summary' },
-    { text: 'Proyectos', icon: <BusinessIcon />, path: '/projects' },
-    { text: 'Usuarios', icon: <PersonIcon />, path: '/users' },
-    { text: 'Permisos', icon: <SecurityIcon />, path: '/permissions' },
-    { text: 'Aprobaciones', icon: <CheckCircleIcon />, path: '/approvals' }
+    ...(user?.role === 'admin'
+      ? [
+          { text: 'Proyectos', icon: <BusinessIcon />, path: '/projects' },
+          { text: 'Usuarios', icon: <PersonIcon />, path: '/users' },
+          { text: 'Permisos', icon: <SecurityIcon />, path: '/permissions' },
+          { text: 'Aprobaciones', icon: <CheckCircleIcon />, path: '/approvals' }
+        ]
+      : [])
   ];
 
   const drawer = (
