@@ -53,12 +53,19 @@ const WeeklySummary = () => {
   const [users, setUsers] = useState([]);
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedUser, setSelectedUser] = useState("");
-  const { user, loadingUser } = useLoggedUser();
+  const { user, loading: loadingUser } = useLoggedUser();
 
   // cargar proyectos y usuarios al iniciar
   useEffect(() => {
     const fetchInitialData = async () => {
       if (!auth.currentUser) return;
+      if (loadingUser) return;
+      if (!user) {
+        setError("Debe iniciar sesión para ver el resumen semanal.");
+        setLoading(false);
+        return;
+      }
+      
       try {
         setLoading(true);
         const projectsCollection = collection(db, "projects");
@@ -75,6 +82,11 @@ const WeeklySummary = () => {
           ...doc.data(),
         }));
         setUsers(usersList);
+        if (user?.role === "employee") {
+          // Si el usuario no es admin, filtrar por su ID
+          setSelectedUser(user.id);
+          setSelectedProject(user.currentProject?.id || "");
+        }
       } catch (error) {
         console.error("Error al cargar datos iniciales:", error);
         setError(
@@ -83,6 +95,7 @@ const WeeklySummary = () => {
       } finally {
         setLoading(false);
       }
+      
     };
     fetchInitialData();
   }, [user]);
@@ -335,60 +348,78 @@ const WeeklySummary = () => {
               mb: 2,
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <CalendarTodayIcon sx={{ mr: 1, color: "primary.main" }} />
-              <Typography variant="h6">
-                Semana: {weekSummary?.weekStart} - {weekSummary?.weekEnd}
-              </Typography>
-            </Box>
-            <Box>
-              <IconButton onClick={handlePreviousWeek} color="primary">
-                <ArrowBackIcon />
-              </IconButton>
-              <IconButton onClick={handleNextWeek} color="primary">
-                <ArrowForwardIcon />
-              </IconButton>
-            </Box>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={8} >
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <CalendarTodayIcon sx={{ mr: 1, color: "primary.main" }} />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontSize: {
+                        xs: "0.9rem", // sm and down
+                        md: "1.5rem",    // sm and up
+                      },
+                    }}
+                  >
+                    Semana: {weekSummary?.weekStart} - {weekSummary?.weekEnd}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={4} textAlign="right">
+                <Box sx={{ display: "flex", justifyContent: "flex-end",  }}>
+                  <IconButton onClick={handlePreviousWeek} color="primary">
+                    <ArrowBackIcon />
+                  </IconButton>
+                  <IconButton onClick={handleNextWeek} color="primary">
+                    <ArrowForwardIcon />
+                  </IconButton>
+                </Box>
+              </Grid>
+            </Grid>
           </Box>
 
           <Box sx={{ mt: 3, mb: 2 }}>
             <Grid container spacing={2} justifyContent={"space-between"}>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  select
-                  fullWidth
-                  size="small"
-                  label="Proyecto"
-                  value={selectedProject}
-                  onChange={handleSelectedProject}
-                >
-                  <MenuItem key="all">Todos los proyectos</MenuItem>
-                  {projects.map((project) => (
-                    <MenuItem key={project.id} value={project.id}>
-                      {project.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-              {selectedProject && (
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    select
-                    fullWidth
-                    size="small"
-                    label="Empleado"
-                    value={selectedUser}
-                    disabled={!selectedProject}
-                    onChange={(e) => setSelectedUser(e.target.value)}
-                  >
-                    <MenuItem value="">Todos los empleados</MenuItem>
-                    {users.map((user) => (
-                      <MenuItem key={user.id} value={user.id}>
-                        {user.displayName || user.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
+              { !loadingUser && user?.role === "admin" && (
+                <>
+                  <Grid item xs={12} md={4}>
+                    <TextField
+                      select
+                      fullWidth
+                      size="small"
+                      label="Proyecto"
+                      value={selectedProject}
+                      onChange={handleSelectedProject}
+                    >
+                      <MenuItem key="all">Todos los proyectos</MenuItem>
+                      {projects.map((project) => (
+                        <MenuItem key={project.id} value={project.id}>
+                          {project.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  {selectedProject && (
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        select
+                        fullWidth
+                        size="small"
+                        label="Empleado"
+                        value={selectedUser}
+                        disabled={!selectedProject}
+                        onChange={(e) => setSelectedUser(e.target.value)}
+                      >
+                        <MenuItem value="">Todos los empleados</MenuItem>
+                        {users.map((user) => (
+                          <MenuItem key={user.id} value={user.id}>
+                            {user.displayName || user.name}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Grid>
+                  )}
+                </>
               )}
               
               <Grid item xs={12} md={4} alignItems={"center"} textAlign={"right"}>

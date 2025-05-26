@@ -42,6 +42,7 @@ const useLoggedUser = () => {
             currentProject = projectsList[0];
           }
           const user = {
+            id: userSnapshot.docs[0].id,
             ...userSnapshot.docs[0].data(),
             currentProject
           }
