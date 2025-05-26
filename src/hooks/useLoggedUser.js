@@ -27,8 +27,26 @@ const useLoggedUser = () => {
           setUser(null);
           setError('User not found');
         } else {
-          setUser(userSnapshot.docs[0].data());
-          console.log({ user: userSnapshot.docs[0].data() });
+          const projectQuery = query(
+          collection(db, 'projects'),
+          where('__name__', '==', userSnapshot.docs[0].data().projectId)
+          );
+          const projectsSnapshot = await getDocs(projectQuery);
+          console.log('Projects found:', projectsSnapshot.docs, userSnapshot.docs[0].data().projectId);
+          const projectsList = projectsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          let currentProject = null;
+          if (projectsList.length > 0) {
+            currentProject = projectsList[0];
+          }
+          const user = {
+            ...userSnapshot.docs[0].data(),
+            currentProject
+          }
+          setUser(user);
+          console.log({user});
           setError(null);
         }
       } catch (err) {
