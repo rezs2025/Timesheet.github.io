@@ -6,9 +6,7 @@ import {
   Typography,
   Paper,
   Button,
-  Grid,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   CircularProgress,
@@ -19,7 +17,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Chip
 } from '@mui/material';
 import {
   Security as SecurityIcon,
@@ -140,13 +137,6 @@ const PermissionManager = () => {
     } finally {
       setLoading(false);
     }
-  };
-  
-  // Obtener nombre del proyecto
-  const getProjectName = (projectId) => {
-    if (!projectId) return 'Sin asignar';
-    const project = projects.find(p => p.id === projectId);
-    return project ? project.name : 'Proyecto no encontrado';
   };
   
   if (loading) {
