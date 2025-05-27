@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../firebase/config";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { collection, doc, query, where, getDocs, orderBy, updateDoc } from "firebase/firestore";
 import {
   format,
   startOfWeek,
@@ -8,6 +8,7 @@ import {
   eachDayOfInterval,
   addWeeks,
   subWeeks,
+  parseISO
 } from "date-fns";
 import { es } from "date-fns/locale";
 import * as XLSX from "xlsx";
@@ -30,6 +31,15 @@ import {
   Grid,
   TextField,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
@@ -54,6 +64,14 @@ const WeeklySummary = () => {
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedUser, setSelectedUser] = useState("");
   const { user, loading: loadingUser } = useLoggedUser();
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [editForm, setEditForm] = useState({
+    checkInTime: '',
+    checkOutTime: '',
+    lunchDuration: '60'
+  });
+  const [message, setMessage] = useState({ type: "", text: "" });
+  
 
   // cargar proyectos y usuarios al iniciar
   useEffect(() => {
@@ -319,9 +337,61 @@ const WeeklySummary = () => {
     setSelectedUser("");
   };
 
-  const clearFilters = () => {
-    setSelectedProject("");
-    setSelectedUser("");
+  const handleEditClick = (entry) => {
+    setEditingEntry(entry);
+    setEditForm({
+      checkInTime: entry.checkInTime || '',
+      checkOutTime: entry.checkOutTime || '',
+      lunchDuration: entry.lunchDuration || '60'
+    });
+  };
+
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditSubmit = async () => {
+    if (!editingEntry) return;
+    
+    try {
+      setLoading(true);
+      const entryRef = doc(db, "timeEntries", editingEntry.id);
+      await updateDoc(entryRef, {
+        checkInTime: editForm.checkInTime,
+        checkOutTime: editForm.checkOutTime,
+        lunchDuration: editForm.lunchDuration,
+        updatedAt: new Date(),
+        updatedBy: auth.currentUser.uid
+      });
+      
+      // Refrescar datos
+      const weekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 1 });
+      const formattedWeekStart = format(currentWeekStart, "yyyy-MM-dd");
+      const formattedWeekEnd = format(weekEnd, "yyyy-MM-dd");
+      
+      const q = query(
+        collection(db, "timeEntries"),
+        where("date", ">=", formattedWeekStart),
+        where("date", "<=", formattedWeekEnd),
+        orderBy("date")
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const entries = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      calculateSummary(entries, currentWeekStart, weekEnd);
+      setEditingEntry(null);
+      setMessage({ type: 'success', text: 'Registro actualizado correctamente' });
+    } catch (error) {
+      console.error('Error al actualizar registro:', error);
+      setMessage({ type: 'error', text: 'Error al actualizar registro' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (error) {
@@ -450,6 +520,9 @@ const WeeklySummary = () => {
               <TableCell sx={{ color: "white" }}>Almuerzo</TableCell>
               <TableCell sx={{ color: "white" }}>Horas</TableCell>
               <TableCell sx={{ color: "white" }}>Notas</TableCell>
+              {user?.role === "admin" && (
+                <TableCell sx={{ color: "white" }}>Acciones</TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -484,6 +557,17 @@ const WeeklySummary = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>{entry.notes || "-"}</TableCell>
+                  {user?.role === "admin" && (
+                    <TableCell>
+                      <Button 
+                        variant="outlined" 
+                        size="small"
+                        onClick={() => handleEditClick(entry)}
+                      >
+                        Editar
+                      </Button>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             )}
@@ -527,6 +611,81 @@ const WeeklySummary = () => {
           </Grid>
         </CardContent>
       </Card>
+      {editingEntry && (
+        <Dialog 
+          open={Boolean(editingEntry)} 
+          onClose={() => setEditingEntry(null)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>
+            Editar Registro - {getUserName(editingEntry.userId)}
+          </DialogTitle>
+          <DialogContent>
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle1" gutterBottom>
+                Proyecto: {getProjectName(editingEntry.projectId)}
+              </Typography>
+              <Typography variant="subtitle1" gutterBottom>
+                Fecha: {format(parseISO(editingEntry.date), 'dd/MM/yyyy')}
+              </Typography>
+              
+              <Grid container spacing={2} sx={{ mt: 2 }}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Hora de Entrada"
+                    name="checkInTime"
+                    value={editForm.checkInTime}
+                    onChange={handleEditFormChange}
+                    type="time"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Hora de Salida"
+                    name="checkOutTime"
+                    value={editForm.checkOutTime}
+                    onChange={handleEditFormChange}
+                    type="time"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl component="fieldset">
+                    <FormLabel component="legend">Tiempo de Almuerzo</FormLabel>
+                    <RadioGroup
+                      row
+                      name="lunchDuration"
+                      value={editForm.lunchDuration}
+                      onChange={handleEditFormChange}
+                    >
+                      <FormControlLabel value="0" control={<Radio />} label="0 min" />
+                      <FormControlLabel value="15" control={<Radio />} label="15 min" />
+                      <FormControlLabel value="30" control={<Radio />} label="30 min" />
+                      <FormControlLabel value="45" control={<Radio />} label="45 min" />
+                      <FormControlLabel value="60" control={<Radio />} label="60 min" />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditingEntry(null)}>Cancelar</Button>
+            <Button 
+              onClick={handleEditSubmit}
+              variant="contained"
+              color="primary"
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={24} /> : 'Guardar Cambios'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Box>
   );
 };
