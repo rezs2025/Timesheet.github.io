@@ -22,6 +22,7 @@ import {
   ArrowForward as ArrowForwardIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import useLoggedUser from "@/hooks/useLoggedUser";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -30,22 +31,30 @@ const Dashboard = () => {
   const [weekSummary, setWeekSummary] = useState(null);
   const [todayEntry, setTodayEntry] = useState(null);
   const [projects, setProjects] = useState([]);
-  
+
+  const { user, loading: loadingUser } = useLoggedUser();
+
   useEffect(() => {
     const fetchData = async () => {
-      if (!auth.currentUser) return;
+      if (loadingUser || !user) return;
       
       try {
         setLoading(true);
         
         // Obtener proyectos
-        const projectsCollection = collection(db, 'projects');
-        const projectsSnapshot = await getDocs(projectsCollection);
-        const projectsList = projectsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setProjects(projectsList);
+        if (user.role === 'employee') {
+          if (user.currentProject) {
+            setProjects([user.currentProject]);
+          }
+        } else {
+          const projectsCollection = collection(db, 'projects');
+          const projectsSnapshot = await getDocs(projectsCollection);
+          const projectsList = projectsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setProjects(projectsList);
+        }
         
         // Obtener entradas de tiempo de la semana actual
         const today = new Date();
@@ -134,7 +143,7 @@ const Dashboard = () => {
     };
     
     fetchData();
-  }, []);
+  }, [user]);
   
   const getProjectName = (projectId) => {
     const project = projects.find(p => p.id === projectId);
@@ -307,16 +316,18 @@ const Dashboard = () => {
                   No hay proyectos asignados.
                 </Typography>
               )}
-              
-              <Button 
-                variant="outlined" 
-                color="primary"
-                onClick={() => navigate('/projects')}
-                sx={{ mt: 2 }}
-                endIcon={<ArrowForwardIcon />}
-              >
-                Ver Todos los Proyectos
-              </Button>
+              {
+                user?.role === 'admin' &&
+                  <Button 
+                    variant="outlined" 
+                    color="primary"
+                    onClick={() => navigate('/projects')}
+                    sx={{ mt: 2 }}
+                    endIcon={<ArrowForwardIcon />}
+                  >
+                    Ver Todos los Proyectos
+                  </Button>
+              }
             </CardContent>
           </Card>
         </Grid>
