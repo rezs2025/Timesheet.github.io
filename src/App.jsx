@@ -10,7 +10,7 @@ import UserManagement from './components/auth/UserManagement';
 import PermissionManager from './components/auth/PermissionManager';
 import Dashboard from './components/dashboard/Dashboard';
 import TimeEntry from './components/timesheet/TimeEntry';
-import WeeklySummary from './components/reports/WeeklySummary';
+import WeeklySummary from './components/reports/WeeklySummary/WeeklySummary';
 import ApprovalManager from './components/reports/ApprovalManager';
 import ProjectList from './components/projects/ProjectList';
 import Layout from './components/layout/Layout';
