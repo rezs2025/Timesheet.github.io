@@ -25,6 +25,7 @@ const WeeklySummary = () => {
   const [selectedUser, setSelectedUser] = useState("");
   const [editingEntry, setEditingEntry] = useState(null);
   const [message, setMessage] = useState({ type: "", text: "" });
+  const [isInitialized, setIsInitialized] = useState(false);
   
   const { user, loading: loadingUser } = useLoggedUser();
   
@@ -61,6 +62,7 @@ const WeeklySummary = () => {
           setSelectedUser(user.id);
           setSelectedProject(user.currentProject?.id || "");
         }
+        setIsInitialized(true);
       } catch (error) {
         console.error("Error al cargar datos iniciales:", error);
         setError(
@@ -72,10 +74,12 @@ const WeeklySummary = () => {
       
     };
     fetchInitialData();
-  }, [user]);
+  }, [user, loadingUser]);
 
   // Cargar datos de la semana actual
   useEffect(() => {
+    if (!isInitialized) return;
+
     const fetchWeekData = async () => {
       if (!auth.currentUser) return;
       try {
@@ -137,7 +141,7 @@ const WeeklySummary = () => {
     };
 
     fetchWeekData();
-  }, [currentWeekStart, selectedProject, selectedUser]);
+  }, [currentWeekStart, selectedProject, selectedUser, isInitialized]);
 
   const calculateSummary = (entries, weekStart, weekEnd) => {
     const daysOfWeek = eachDayOfInterval({ start: weekStart, end: weekEnd });
