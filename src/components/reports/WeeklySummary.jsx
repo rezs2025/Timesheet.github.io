@@ -446,8 +446,7 @@ const WeeklySummary = () => {
               <TableCell sx={{ color: "white" }}>Fecha</TableCell>
               <TableCell sx={{ color: "white" }}>Empleado</TableCell>
               <TableCell sx={{ color: "white" }}>Proyecto</TableCell>
-              <TableCell sx={{ color: "white" }}>Entrada</TableCell>
-              <TableCell sx={{ color: "white" }}>Salida</TableCell>
+              <TableCell sx={{ color: "white" }}>Entrada/Salida</TableCell>
               <TableCell sx={{ color: "white" }}>Almuerzo</TableCell>
               <TableCell sx={{ color: "white" }}>Horas</TableCell>
               <TableCell sx={{ color: "white" }}>Notas</TableCell>
@@ -475,8 +474,7 @@ const WeeklySummary = () => {
                   <TableCell>
                     {entry.projectId ? getProjectName(entry.projectId) : "-"}
                   </TableCell>
-                  <TableCell>{entry.checkInTime || "-"}</TableCell>
-                  <TableCell>{entry.checkOutTime || "-"}</TableCell>
+                  <TableCell>{entry.checkInTime} - {entry.checkOutTime}</TableCell>
                   <TableCell>
                     {entry.lunchDuration ? `${entry.lunchDuration} min` : "-"}
                   </TableCell>
