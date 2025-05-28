@@ -1,7 +1,12 @@
+// src/components/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../firebase/config';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, parseISO, isWithinInterval } from 'date-fns';
+import { 
+  collection, query, where, getDocs, orderBy, documentId, doc, getDoc 
+} from 'firebase/firestore';
+import { 
+  format, startOfWeek, endOfWeek, eachDayOfInterval 
+} from 'date-fns';
 import { es } from 'date-fns/locale';
 import {
   Box,
@@ -22,142 +27,155 @@ import {
   ArrowForward as ArrowForwardIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import useLoggedUser from "@/hooks/useLoggedUser";
+import useLoggedUser from '@/hooks/useLoggedUser';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [weekSummary, setWeekSummary] = useState(null);
-  const [todayEntry, setTodayEntry] = useState(null);
-  const [projects, setProjects] = useState([]);
+  const { user, loading: loadingUser, error: errorUser } = useLoggedUser();
 
-  const { user, loading: loadingUser } = useLoggedUser();
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState('');
+  const [projects, setProjects] = useState([]);
+  const [weekSummary, setWeekSummary] = useState(null);
+  const [todayEntry, setTodayEntry]   = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (loadingUser || !user) return;
-      
+      if (loadingUser) return;
+
+      // Si no hay usuario autenticado
+      if (!user) {
+        setProjects([]);
+        setWeekSummary(null);
+        setTodayEntry(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        
-        // Obtener proyectos
+
+        // 1) Proyectos
         if (user.role === 'employee') {
           if (user.currentProject) {
             setProjects([user.currentProject]);
+          } else {
+            setProjects([]); // Sin proyecto asignado
           }
         } else {
-          const projectsCollection = collection(db, 'projects');
-          const projectsSnapshot = await getDocs(projectsCollection);
-          const projectsList = projectsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-          setProjects(projectsList);
+          // admin u otro rol → todos los proyectos
+          const projectsSnapshot = await getDocs(collection(db, 'projects'));
+          setProjects(
+            projectsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+          );
         }
-        
-        // Obtener entradas de tiempo de la semana actual
-        const today = new Date();
-        const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Lunes
-        const weekEnd = endOfWeek(today, { weekStartsOn: 1 }); // Domingo
-        
-        const formattedWeekStart = format(weekStart, 'yyyy-MM-dd');
-        const formattedWeekEnd = format(weekEnd, 'yyyy-MM-dd');
-        const formattedToday = format(today, 'yyyy-MM-dd');
-        
-        const entriesRef = collection(db, 'timeEntries');
-        const q = query(
-          entriesRef,
-          where('userId', '==', auth.currentUser.uid),
-          where('date', '>=', formattedWeekStart),
-          where('date', '<=', formattedWeekEnd),
-          orderBy('date')
-        );
-        
-        const querySnapshot = await getDocs(q);
-        const entries = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        
-        // Calcular horas trabajadas por día
-        const daysOfWeek = eachDayOfInterval({ start: weekStart, end: weekEnd });
-        let totalHours = 0;
-        let totalMinutes = 0;
-        
-        const dailySummary = daysOfWeek.map(day => {
-          const formattedDay = format(day, 'yyyy-MM-dd');
-          const dayEntry = entries.find(entry => entry.date === formattedDay);
-          
-          let hoursWorked = 0;
-          let minutesWorked = 0;
-          
-          if (dayEntry && dayEntry.checkInTime && dayEntry.checkOutTime) {
-            const [inHours, inMinutes] = dayEntry.checkInTime.split(':').map(Number);
-            const [outHours, outMinutes] = dayEntry.checkOutTime.split(':').map(Number);
-            
-            let totalMinutesWorked = (outHours * 60 + outMinutes) - (inHours * 60 + inMinutes);
-            totalMinutesWorked -= parseInt(dayEntry.lunchDuration || '60', 10);
-            
-            if (totalMinutesWorked > 0) {
-              hoursWorked = Math.floor(totalMinutesWorked / 60);
-              minutesWorked = totalMinutesWorked % 60;
-              
-              totalHours += hoursWorked;
-              totalMinutes += minutesWorked;
+
+        // 2) Sólo si tiene proyecto, cargar entradas de tiempo
+        if (user.role !== 'employee' || user.currentProject) {
+          const today       = new Date();
+          const weekStart   = startOfWeek(today, { weekStartsOn: 1 });
+          const weekEnd     = endOfWeek(today,   { weekStartsOn: 1 });
+          const formattedStart = format(weekStart, 'yyyy-MM-dd');
+          const formattedEnd   = format(weekEnd,   'yyyy-MM-dd');
+          const formattedToday = format(today,      'yyyy-MM-dd');
+
+          const entriesQuery = query(
+            collection(db, 'timeEntries'),
+            where('userId', '==', auth.currentUser.uid),
+            where('date', '>=', formattedStart),
+            where('date', '<=', formattedEnd),
+            orderBy('date')
+          );
+          const qSnap = await getDocs(entriesQuery);
+          const entries = qSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+          // Resumen diario
+          let totalHours   = 0;
+          let totalMinutes = 0;
+          const days = eachDayOfInterval({ start: weekStart, end: weekEnd });
+          const dailySummary = days.map(day => {
+            const dateKey = format(day, 'yyyy-MM-dd');
+            const entry = entries.find(e => e.date === dateKey);
+            let hours = 0, mins = 0;
+            if (entry?.checkInTime && entry?.checkOutTime) {
+              const [h1, m1] = entry.checkInTime.split(':').map(Number);
+              const [h2, m2] = entry.checkOutTime.split(':').map(Number);
+              let diff = (h2 * 60 + m2) - (h1 * 60 + m1)
+                         - (parseInt(entry.lunchDuration || '60', 10));
+              if (diff > 0) {
+                hours = Math.floor(diff / 60);
+                mins  = diff % 60;
+                totalHours   += hours;
+                totalMinutes += mins;
+              }
             }
-          }
-          
-          // Ajustar el total de minutos
-          if (totalMinutes >= 60) {
-            totalHours += Math.floor(totalMinutes / 60);
-            totalMinutes = totalMinutes % 60;
-          }
-          
-          return {
-            date: day,
-            formattedDate: format(day, 'EEEE d', { locale: es }),
-            entry: dayEntry,
-            hoursWorked,
-            minutesWorked,
-            formattedHours: `${hoursWorked}:${minutesWorked.toString().padStart(2, '0')}`
-          };
-        });
-        
-        // Encontrar la entrada de hoy
-        const todayEntryData = entries.find(entry => entry.date === formattedToday);
-        setTodayEntry(todayEntryData);
-        
-        setWeekSummary({
-          dailySummary,
-          totalHours,
-          totalMinutes,
-          formattedTotal: `${totalHours}:${totalMinutes.toString().padStart(2, '0')}`
-        });
-      } catch (error) {
-        console.error('Error al cargar datos del dashboard:', error);
-        setError('Error al cargar los datos. Por favor, intente nuevamente.');
+            if (totalMinutes >= 60) {
+              totalHours += Math.floor(totalMinutes / 60);
+              totalMinutes = totalMinutes % 60;
+            }
+            return {
+              date: day,
+              formattedDate: format(day, 'EEEE d', { locale: es }),
+              hoursWorked: hours,
+              minutesWorked: mins,
+              formattedHours: `${hours}:${mins.toString().padStart(2, '0')}`
+            };
+          });
+
+          setWeekSummary({
+            dailySummary,
+            totalHours,
+            totalMinutes,
+            formattedTotal: `${totalHours}:${totalMinutes.toString().padStart(2, '0')}`
+          });
+          // Hoy
+          const todayE = entries.find(e => e.date === formattedToday);
+          setTodayEntry(todayE || null);
+        } else {
+          setWeekSummary(null);
+          setTodayEntry(null);
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Error al cargar datos del dashboard. Intenta nuevamente.');
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchData();
-  }, [user]);
-  
-  const getProjectName = (projectId) => {
-    const project = projects.find(p => p.id === projectId);
-    return project ? project.name : 'Proyecto no encontrado';
-  };
-  
-  if (loading) {
+  }, [user, loadingUser]);
+
+  // Spinner mientras carga
+  if (loading || loadingUser) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
         <CircularProgress />
       </Box>
     );
   }
-  
+
+  // Error en hook de usuario
+  if (errorUser) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">{errorUser}</Alert>
+      </Box>
+    );
+  }
+
+  // Sin proyecto para empleados
+  if (user.role === 'employee' && projects.length === 0) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="warning">
+          No tienes un proyecto asignado. Por favor contacta a un administrador para que te asigne uno.
+        </Alert>
+      </Box>
+    );
+  }
+
+  // Error general
   if (error) {
     return (
       <Box sx={{ p: 3 }}>
@@ -165,172 +183,129 @@ const Dashboard = () => {
       </Box>
     );
   }
-  
+
+  // UI normal
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
-      
+      <Typography variant="h4" gutterBottom>Dashboard</Typography>
       <Grid container spacing={3}>
-        {/* Tarjeta de estado actual */}
+
+        {/* Estado Actual */}
         <Grid item xs={12} md={6}>
           <Card elevation={3}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <AccessTimeIcon sx={{ mr: 1, color: 'primary.main' }} />
+                <AccessTimeIcon sx={{ mr: 1, color: 'primary.main' }}/>
                 <Typography variant="h6">Estado Actual</Typography>
               </Box>
-              
+
               {todayEntry ? (
-                <Box>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Proyecto:</strong> {getProjectName(todayEntry.projectId)}
-                  </Typography>
-                  
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Entrada:</strong> {todayEntry.checkInTime || 'No registrada'}
-                  </Typography>
-                  
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Salida:</strong> {todayEntry.checkOutTime || 'No registrada'}
-                  </Typography>
-                  
-                  {todayEntry.checkInTime && todayEntry.checkOutTime && (
-                    <Typography variant="body1" gutterBottom>
-                      <strong>Horas trabajadas:</strong> {weekSummary.dailySummary.find(day => 
-                        format(day.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
-                      )?.formattedHours || '0:00'}
-                    </Typography>
-                  )}
-                  
-                  <Button 
-                    variant="contained" 
-                    color="primary"
+                <>
+                  <Typography><strong>Proyecto:</strong> {
+                    projects.find(p => p.id === todayEntry.projectId)?.name
+                  }</Typography>
+                  <Typography><strong>Entrada:</strong> {todayEntry.checkInTime}</Typography>
+                  <Typography><strong>Salida:</strong> {todayEntry.checkOutTime}</Typography>
+                  <Typography><strong>Horas trabajadas:</strong> {
+                    weekSummary.dailySummary
+                      .find(d => format(d.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'))
+                      ?.formattedHours || '0:00'
+                  }</Typography>
+                  <Button
+                    variant="contained"
                     onClick={() => navigate('/time-entry')}
-                    sx={{ mt: 2 }}
                     endIcon={<ArrowForwardIcon />}
+                    sx={{ mt: 2 }}
                   >
-                    {!todayEntry.checkInTime ? 'Registrar Entrada' : 
-                     !todayEntry.checkOutTime ? 'Registrar Salida' : 'Ver Detalles'}
+                    {!todayEntry.checkInTime ? 'Registrar Entrada'
+                      : !todayEntry.checkOutTime ? 'Registrar Salida'
+                      : 'Ver Detalles'}
                   </Button>
-                </Box>
+                </>
               ) : (
-                <Box>
-                  <Typography variant="body1" gutterBottom>
-                    No has registrado horas hoy.
-                  </Typography>
-                  
-                  <Button 
-                    variant="contained" 
-                    color="primary"
+                <>
+                  <Typography>No has registrado horas hoy.</Typography>
+                  <Button
+                    variant="contained"
                     onClick={() => navigate('/time-entry')}
-                    sx={{ mt: 2 }}
                     endIcon={<ArrowForwardIcon />}
+                    sx={{ mt: 2 }}
                   >
                     Registrar Horas
                   </Button>
-                </Box>
+                </>
               )}
             </CardContent>
           </Card>
         </Grid>
-        
-        {/* Tarjeta de resumen semanal */}
+
+        {/* Resumen Semanal */}
         <Grid item xs={12} md={6}>
           <Card elevation={3}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <CalendarTodayIcon sx={{ mr: 1, color: 'primary.main' }} />
+                <CalendarTodayIcon sx={{ mr: 1, color: 'primary.main' }}/>
                 <Typography variant="h6">Resumen Semanal</Typography>
               </Box>
-              
-              {weekSummary && (
-                <Box>
-                  <Typography variant="body1" gutterBottom>
-                    <strong>Total de horas esta semana:</strong> {weekSummary.formattedTotal}
+              <Typography><strong>Total de horas esta semana:</strong> {weekSummary.formattedTotal}</Typography>
+              <Divider sx={{ my: 2 }}/>
+              {weekSummary.dailySummary.map(day => (
+                <Box
+                  key={format(day.date, 'yyyy-MM-dd')}
+                  sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}
+                >
+                  <Typography sx={{ textTransform: 'capitalize' }}>
+                    {day.formattedDate}
                   </Typography>
-                  
-                  <Divider sx={{ my: 2 }} />
-                  
-                  {weekSummary.dailySummary.map((day) => (
-                    <Box key={format(day.date, 'yyyy-MM-dd')} sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                      <Typography variant="body2" sx={{ 
-                        textTransform: 'capitalize',
-                        fontWeight: isWithinInterval(new Date(), { start: startOfWeek(day.date), end: endOfWeek(day.date) }) ? 'bold' : 'normal'
-                      }}>
-                        {day.formattedDate}
-                      </Typography>
-                      <Typography variant="body2">
-                        {day.formattedHours}
-                      </Typography>
-                    </Box>
-                  ))}
-                  
-                  <Button 
-                    variant="outlined" 
-                    color="primary"
-                    onClick={() => navigate('/weekly-summary')}
-                    sx={{ mt: 2 }}
-                    endIcon={<ArrowForwardIcon />}
-                  >
-                    Ver Reporte Completo
-                  </Button>
+                  <Typography>{day.formattedHours}</Typography>
                 </Box>
-              )}
+              ))}
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/weekly-summary')}
+                endIcon={<ArrowForwardIcon />}
+                sx={{ mt: 2 }}
+              >
+                Ver Reporte Completo
+              </Button>
             </CardContent>
           </Card>
         </Grid>
-        
-        {/* Tarjeta de proyectos */}
+
+        {/* Mis Proyectos */}
         <Grid item xs={12}>
           <Card elevation={3}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <BusinessIcon sx={{ mr: 1, color: 'primary.main' }} />
+                <BusinessIcon sx={{ mr: 1, color: 'primary.main' }}/>
                 <Typography variant="h6">Mis Proyectos</Typography>
               </Box>
-              
-              {projects.length > 0 ? (
-                <Grid container spacing={2}>
-                  {projects.map((project) => (
-                    <Grid item xs={12} sm={6} md={4} key={project.id}>
-                      <Paper elevation={1} sx={{ p: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          {project.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                          {project.description || 'Sin descripción'}
-                        </Typography>
-                        {project.location && (
-                          <Typography variant="body2" color="text.secondary">
-                            <strong>Ubicación:</strong> {project.location.address || 'No especificada'}
-                          </Typography>
-                        )}
-                      </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
-              ) : (
-                <Typography variant="body1">
-                  No hay proyectos asignados.
-                </Typography>
+              <Grid container spacing={2}>
+                {projects.map(proj => (
+                  <Grid item xs={12} sm={6} md={4} key={proj.id}>
+                    <Paper sx={{ p: 2 }}>
+                      <Typography variant="subtitle1">{proj.name}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {proj.description || 'Sin descripción'}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+              {user.role === 'admin' && (
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate('/projects')}
+                  endIcon={<ArrowForwardIcon />}
+                  sx={{ mt: 2 }}
+                >
+                  Ver Todos los Proyectos
+                </Button>
               )}
-              {
-                user?.role === 'admin' &&
-                  <Button 
-                    variant="outlined" 
-                    color="primary"
-                    onClick={() => navigate('/projects')}
-                    sx={{ mt: 2 }}
-                    endIcon={<ArrowForwardIcon />}
-                  >
-                    Ver Todos los Proyectos
-                  </Button>
-              }
             </CardContent>
           </Card>
         </Grid>
+
       </Grid>
     </Box>
   );
