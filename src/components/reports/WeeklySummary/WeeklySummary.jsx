@@ -9,7 +9,7 @@ import FiltersPanel from "./components/FiltersPanel";
 import TimeEntriesTable from "./components/TimeEntriesTable";
 import SummaryCard from "./components/SummaryCard";
 import EditEntryDialog from "./components/EditEntryDialog";
-import { Box, Typography, Card, Alert } from "@mui/material";
+import { Box, Typography, Card, Alert, CircularProgress, Backdrop } from "@mui/material";
 import * as XLSX from "xlsx";
 
 const WeeklySummary = () => {
@@ -344,10 +344,28 @@ const WeeklySummary = () => {
     }
   };
 
+  if (loadingUser || loading || !isInitialized) {
+    return (
+      <Backdrop open sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, color: "#fff" }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
+
   if (error) {
     return (
       <Box sx={{ p: 3 }}>
         <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
+
+  if (!loadingUser && user?.role === "employee" && !user?.currentProject?.id) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="warning">
+          No estás asignado a ningún proyecto. Contacta a tu administrador para que te asigne uno.
+        </Alert>
       </Box>
     );
   }
