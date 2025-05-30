@@ -328,6 +328,16 @@ const TimeEntry = () => {
     return `${hours}:${minutes.toString().padStart(2, "0")}`;
   };
 
+  if (!loadingUser && user && !user.currentProject?.id) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="warning">
+          No estás asignado a ningún proyecto. Contacta a tu administrador para que te asigne uno.
+        </Alert>
+      </Box>
+    );
+  }
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
       <Box sx={{ p: 2 }}>
