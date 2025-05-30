@@ -25,6 +25,7 @@ import {
   MenuItem,
   Alert,
   CircularProgress,
+  Backdrop,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -327,6 +328,14 @@ const TimeEntry = () => {
 
     return `${hours}:${minutes.toString().padStart(2, "0")}`;
   };
+
+  if (loadingUser || loading) {
+    return (
+      <Backdrop open sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, color: '#fff' }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
 
   if (!loadingUser && user && !user.currentProject?.id) {
     return (
