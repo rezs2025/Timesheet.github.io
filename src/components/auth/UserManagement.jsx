@@ -140,7 +140,8 @@ const UserManagement = () => {
         // Actualizar usuario existente
         const userRef = doc(db, 'users', currentUser.id);
         await updateDoc(userRef, {
-          name: formData.name,
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
           role: formData.role,
           projectId: formData.projectId,
           updatedAt: new Date()
@@ -295,7 +296,6 @@ const UserManagement = () => {
                 value={formData.email}
                 onChange={handleChange}
                 fullWidth
-                disabled={currentUser !== null}
               />
             </Grid>
             

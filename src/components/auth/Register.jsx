@@ -61,7 +61,7 @@ const Register = () => {
       setLoading(true);
       
       // Crear usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
       const user = userCredential.user;
       
       // Actualizar perfil con nombre
