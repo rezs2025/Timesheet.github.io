@@ -40,6 +40,7 @@ const Register = () => {
     setError('');
     
     const { name, email, password, confirmPassword } = formData;
+    const trimmedEmail = email.trim().toLowerCase();
     
     // Validaciones
     if (!name || !email || !password || !confirmPassword) {
@@ -61,7 +62,7 @@ const Register = () => {
       setLoading(true);
       
       // Crear usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+      const userCredential = await createUserWithEmailAndPassword(auth, trimmedEmail, password);
       const user = userCredential.user;
       
       // Actualizar perfil con nombre
@@ -72,12 +73,13 @@ const Register = () => {
       // Guardar información adicional en Firestore
       await setDoc(doc(db, 'users', user.uid), {
         name,
-        email,
+        email: trimmedEmail,
         createdAt: new Date(),
         role: 'employee' // Por defecto todos son empleados
       });
       
       navigate('/');
+      window.location.reload();
     } catch (error) {
       console.error('Error al registrar usuario:', error);
       
