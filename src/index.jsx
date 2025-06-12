@@ -5,6 +5,7 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { registerServiceWorker } from './registerServiceWorker';
 
 const theme = createTheme({
   palette: {
@@ -31,3 +32,6 @@ root.render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+// Register the service worker
+registerServiceWorker();
