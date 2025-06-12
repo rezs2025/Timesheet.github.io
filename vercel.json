@@ -1,4 +1,4 @@
-{ 
+{
   "headers": [
     {
       "source": "/(.*).html",
@@ -24,6 +24,10 @@
         {
           "key": "Content-Type",
           "value": "application/manifest+json"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
         }
       ]
     },
@@ -55,12 +59,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/sw.js",               "destination": "/sw.js" },
-    { "source": "/manifest.json",       "destination": "/manifest.json" },
-
-    { "source": "/assets/(.*)",         "destination": "/assets/$1" },
-    { "source": "/favicon.ico",         "destination": "/favicon.ico" },
-    
-    { "source": "/:path*",              "destination": "/index.html" }
+    { 
+      "source": "/:path*",              
+      "destination": "/index.html" 
+    }
   ]
 }
