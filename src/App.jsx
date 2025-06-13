@@ -14,6 +14,7 @@ import WeeklySummary from './components/reports/WeeklySummary/WeeklySummary';
 import ApprovalManager from './components/reports/ApprovalManager';
 import ProjectList from './components/projects/ProjectList';
 import Layout from './components/layout/Layout';
+import Loading from '@/components/ui/Loading';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -29,7 +30,7 @@ function App() {
   }, []);
 
   if (loading) {
-    return <div>Cargando...</div>;
+    return <Loading />;
   }
 
   return (
