@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import useLoggedUser from '@/hooks/useLoggedUser';
+import Loading from '@/components/ui/Loading';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -148,11 +149,7 @@ const Dashboard = () => {
 
   // Spinner mientras carga
   if (loading || loadingUser) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <Loading />;
   }
 
   // Error en hook de usuario
