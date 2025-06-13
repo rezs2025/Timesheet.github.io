@@ -7,33 +7,51 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',    // automatically check for updates
-      includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
-      manifest: false,
-      manifestFilename: 'manifest.json',
-      workbox: {
-        // which files to precache
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        runtimeCaching: [
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      manifest: {
+        name: 'Time Sheet App',
+        short_name: 'TimeSheet',
+        description: 'Aplicación de registro de horas de trabajo',
+        theme_color: '#ffffff',
+        icons: [
           {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-stylesheets'
-            }
+            "src": "/pwa-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
           },
           {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-webfonts',
-              expiration: {
-                maxEntries: 30,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
-              }
-            }
+            "src": "/pwa-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+          },
+          {
+            "src": "/pwa-maskable-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+          },
+          {
+            "src": "/pwa-maskable-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
           }
-        ]
+        ],
+        "screenshots": [
+          {
+            "src": "/screenshots/desktop-1280x720.png",
+            "type": "image/png",
+            "sizes": "1280x720",
+            "form_factor": "wide"
+          },
+          {
+            "src": "/screenshots/mobile-375x667.png",
+            "type": "image/png",
+            "sizes": "375x667"
+          }
+        ],
       }
     })
   ],
