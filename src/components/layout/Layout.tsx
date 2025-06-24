@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { auth } from '../../firebase/config';
-import { signOut } from 'firebase/auth';
 import {
   AppBar,
   Box,
@@ -31,22 +30,23 @@ import {
   Security as SecurityIcon,
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
-import useLoggedUser from "@/hooks/useLoggedUser";
+import { useAuth } from '@shared/hooks/useAuth';
 
 
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const { user, loadingUser } = useLoggedUser();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const { user, logout } = useAuth();
+  
   
   
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
   };
 
-  const handleProfileMenuOpen = (event) => {
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -56,7 +56,7 @@ const Layout = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      logout();
       navigate('/login');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);

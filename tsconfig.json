@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",        // resolver módulos estilo Node
+    "jsx": "react-jsx",               // el runtime JSX de React 17+
+    "strict": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@features/*": ["features/*"],
+      "@shared/*": ["shared/*"],
+      "@layouts/*": ["layouts/*"]
+    },
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,        // si importas .json
+    "types": ["vite/client"]          // para que TS conozca las globals de Vite
+  },
+  "include": ["src"]
+}

@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { auth } from '../../firebase/config';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Box,
@@ -14,40 +12,19 @@ import {
   Grid
 } from '@mui/material';
 import { LockOutlined as LockOutlinedIcon } from '@mui/icons-material';
+import { useAuth } from '@shared/hooks/useAuth';
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { login, loading, error, user } = useAuth();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
-    
-    if (!email || !password) {
-      setError('Por favor complete todos los campos');
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+    await login({ email, password });
+    if (!error && !loading && user) {
       navigate('/');
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      
-      let errorMessage = 'Error al iniciar sesión';
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        errorMessage = 'Credenciales incorrectas';
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMessage = 'Demasiados intentos fallidos. Intente más tarde';
-      }
-      
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -106,10 +83,15 @@ const Login = () => {
               label="Correo Electrónico"
               name="email"
               autoComplete="email"
+              type="email"
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
+              inputProps={{
+                pattern: "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$",
+                title: "Introduce un correo electrónico válido"
+              }}
             />
             
             <TextField

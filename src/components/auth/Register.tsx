@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import { auth, db } from '../../firebase/config';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Box,
@@ -15,6 +12,7 @@ import {
   Grid
 } from '@mui/material';
 import { PersonAdd as PersonAddIcon } from '@mui/icons-material';
+import { useAuth } from '@shared/hooks/useAuth';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -24,10 +22,10 @@ const Register = () => {
     password: '',
     confirmPassword: ''
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { register, loading, error } = useAuth();
+  
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -35,66 +33,19 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
     
     const { name, email, password, confirmPassword } = formData;
     const trimmedEmail = email.trim().toLowerCase();
-    
-    // Validaciones
-    if (!name || !email || !password || !confirmPassword) {
-      setError('Por favor complete todos los campos');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      return;
-    }
-    
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      
-      // Crear usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, trimmedEmail, password);
-      const user = userCredential.user;
-      
-      // Actualizar perfil con nombre
-      await updateProfile(user, {
-        displayName: name
-      });
-      
-      // Guardar información adicional en Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        name,
-        email: trimmedEmail,
-        createdAt: new Date(),
-        role: 'employee' // Por defecto todos son empleados
-      });
-      
+    await register({
+      fullName: name,
+      email: trimmedEmail,
+      password,
+      confirmPassword
+    });
+    if (!error) {
       navigate('/');
-      window.location.reload();
-    } catch (error) {
-      console.error('Error al registrar usuario:', error);
-      
-      let errorMessage = 'Error al registrar usuario';
-      if (error.code === 'auth/email-already-in-use') {
-        errorMessage = 'Este correo electrónico ya está en uso';
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = 'Correo electrónico inválido';
-      } else if (error.code === 'auth/weak-password') {
-        errorMessage = 'La contraseña es demasiado débil';
-      }
-      
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 

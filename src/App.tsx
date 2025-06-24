@@ -13,21 +13,14 @@ import TimeEntry from './components/timesheet/TimeEntry';
 import WeeklySummary from './components/reports/WeeklySummary/WeeklySummary';
 import ApprovalManager from './components/reports/ApprovalManager';
 import ProjectList from './components/projects/ProjectList';
-import Layout from './components/layout/Layout';
+import Layout from '@/components/layout/Layout';
 import Loading from '@/components/ui/Loading';
+import { useAuth } from '@shared/hooks/useAuth';
+
+import { ProjectsAdminPage } from '@features/projects/pages/ProjectsAdminPage';
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { loading, user } = useAuth();
 
   if (loading) {
     return <Loading />;
@@ -40,6 +33,14 @@ function App() {
       
       <Route path="/" element={user ? <Layout /> : <Navigate to="/login" />}>
         <Route index element={<Dashboard />} />
+        <Route
+          path="projects"
+          element={
+            user?.role === 'admin'
+              ? <ProjectsAdminPage />
+              : <Navigate to="/" replace />
+          }
+      />
         <Route path="time-entry" element={<TimeEntry />} />
         <Route path="weekly-summary" element={<WeeklySummary />} />
         <Route path="projects" element={<ProjectList />} />

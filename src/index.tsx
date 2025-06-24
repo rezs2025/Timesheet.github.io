@@ -5,6 +5,7 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { AuthProvider } from '@shared/hooks/useAuth';
 
 const theme = createTheme({
   palette: {
@@ -20,13 +21,19 @@ const theme = createTheme({
   },
 });
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const container = document.getElementById('root');
+if (!container) {
+  throw new Error("Root container missing in index.html");
+}
+const root = ReactDOM.createRoot(container);
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>
