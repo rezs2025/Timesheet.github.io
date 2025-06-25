@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { CreateProjectDto, projectsService } from "../services/project.service";
-import type { Project } from "@shared/types/project";
+import type { Project } from "@/shared/types/project";
 
 import { TextField, Grid, Button, CircularProgress } from "@mui/material";
 

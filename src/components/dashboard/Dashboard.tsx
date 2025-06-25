@@ -27,8 +27,8 @@ import {
   ArrowForward as ArrowForwardIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import Loading from '@shared/components/ui/Loading';
-import { useAuth } from '@shared/hooks/useAuth';
+import Loading from '@/shared/components/ui/Loading';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 const Dashboard = () => {
   const navigate = useNavigate();

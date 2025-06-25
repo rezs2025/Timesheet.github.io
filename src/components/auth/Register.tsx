@@ -12,7 +12,7 @@ import {
   Grid
 } from '@mui/material';
 import { PersonAdd as PersonAddIcon } from '@mui/icons-material';
-import { useAuth } from '@shared/hooks/useAuth';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 const Register = () => {
   const navigate = useNavigate();

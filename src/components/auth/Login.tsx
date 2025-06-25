@@ -4,7 +4,6 @@ import {
   Box,
   Typography,
   TextField,
-  Button,
   Paper,
   Container,
   Alert,
@@ -12,7 +11,8 @@ import {
   Grid
 } from '@mui/material';
 import { LockOutlined as LockOutlinedIcon } from '@mui/icons-material';
-import { useAuth } from '@shared/hooks/useAuth';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { Button } from '@/shared/components/ui/button';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -107,12 +107,11 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
             />
-            
+            <div className="flex justify-center">
+              <Button>Click me</Button>
+            </div>
             <Button
               type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
               disabled={loading}
             >
               {loading ? <CircularProgress size={24} /> : 'Iniciar Sesión'}

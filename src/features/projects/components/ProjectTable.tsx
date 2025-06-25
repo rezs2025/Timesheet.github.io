@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import type { Project } from '@shared/types/project';
+import type { Project } from '@/shared/types/project';
 
 interface Props {
   projects: Project[];

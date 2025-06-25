@@ -1,6 +1,6 @@
 // src/features/projects/services/projects.service.ts
-import { api } from '@shared/services/api';
-import type { Project } from '@shared/types/project';
+import { api } from '@/shared/services/api';
+import type { Project } from '@/shared/types/project';
 
 export interface PaginatedProjects {
   projects: Project[];

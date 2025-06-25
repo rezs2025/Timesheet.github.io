@@ -1,7 +1,7 @@
 // src/features/projects/hooks/useProjects.ts
 import { useState, useEffect, useCallback } from "react";
 import { projectsService } from "../services/project.service";
-import type { Project } from "@shared/types/project";
+import type { Project } from "@/shared/types/project";
 
 interface UseProjectsResult {
   projects: Project[];

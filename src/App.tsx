@@ -15,9 +15,9 @@ import ApprovalManager from './components/reports/ApprovalManager';
 import ProjectList from './components/projects/ProjectList';
 import Layout from '@/components/layout/Layout';
 import Loading from '@/components/ui/Loading';
-import { useAuth } from '@shared/hooks/useAuth';
+import { useAuth } from '@/shared/hooks/useAuth';
 
-import { ProjectsAdminPage } from '@features/projects/pages/ProjectsAdminPage';
+import { ProjectsAdminPage } from '@/features/projects/pages/ProjectsAdminPage';
 
 function App() {
   const { loading, user } = useAuth();
@@ -43,7 +43,6 @@ function App() {
       />
         <Route path="time-entry" element={<TimeEntry />} />
         <Route path="weekly-summary" element={<WeeklySummary />} />
-        <Route path="projects" element={<ProjectList />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="permissions" element={<PermissionManager />} />
         <Route path="approvals" element={<ApprovalManager />} />

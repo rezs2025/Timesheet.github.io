@@ -1,4 +1,4 @@
-import { User } from '@shared/types/user';
+import { User } from '@/shared/types/user';
 import { api } from './api'
 
 export interface AuthResponse {

@@ -16,7 +16,7 @@ import {
   useTheme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { SearchInput } from "@shared/components/SearchInput";
+import { SearchInput } from "@/shared/components/SearchInput";
 
 export function ProjectsAdminPage() {
   const {
