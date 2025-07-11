@@ -26,18 +26,23 @@ export const authService = {
   },
 
   register: async (data: RegisterDto) => {
-    const res = await api.post<AuthResponse>('/auth/register', data);
+    const { confirmPassword, ...payload } = data;
+    const res = await api.post<AuthResponse>('/auth/signup', payload);
     localStorage.setItem('token', res.data.token);
     return res.data;
   },
 
   me: async () => {
     const token = localStorage.getItem('token');
-    console.log(`Token from localStorage: ${token}`);
     if (token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
     const res = await api.get<AuthResponse>('/auth/me');
     return res.data.user;
+  },
+
+  logout: () => {
+    localStorage.removeItem('token');
+    delete api.defaults.headers.common['Authorization'];
   },
 };

@@ -1,21 +1,20 @@
 // src/features/projects/pages/ProjectsAdminPage.tsx
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useProjects } from "../hooks/useProjects";
 import { projectsService } from "../services/project.service";
 import { ProjectTable } from "../components/ProjectTable";
 import { ProjectForm } from "../components/ProjectForm";
+import { Plus } from "lucide-react";
+import { useIsMobile } from "@/shared/hooks/use-mobile";
 
+import { Button } from "@/shared/components/ui/button";
 import {
-  Box,
-  Button,
   Dialog,
-  DialogTitle,
   DialogContent,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/components/ui/dialog";
 import { SearchInput } from "@/shared/components/SearchInput";
 
 export function ProjectsAdminPage() {
@@ -30,21 +29,21 @@ export function ProjectsAdminPage() {
     setPage,
     setQuery,
     refresh,
-  } = useProjects(1, 2);
+  } = useProjects(1, 10);
   const [editing, setEditing] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
+  const isMobile = useIsMobile();
 
   const openNew = () => {
     setEditing(null);
     setModalOpen(true);
   };
+  
   const openEdit = (id: string) => {
     setEditing(id);
     setModalOpen(true);
   };
+  
   const close = () => setModalOpen(false);
 
   const handleSaved = () => {
@@ -54,60 +53,81 @@ export function ProjectsAdminPage() {
 
   const handleDelete = async (id: string) => {
     await projectsService.remove(id);
-    setPage(page);
+    refresh();
   };
 
-  const onSearch = (q: string) => {
-    setQuery(q)
-    setPage(1)
-  }
+  const onSearch = useCallback((q: string) => {
+    setQuery(q);
+    setPage(1);
+  }, [setQuery, setPage]);
 
   return (
-    <Box p={{ sx: 1, sm: 3 }} >
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        mb={2}
-      >
-        <Typography
-          variant={isMobile ? "h5" : "h4"}
-        >
+    <div className="space-y-6 p-4 md:p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className={`font-bold ${isMobile ? 'text-2xl' : 'text-3xl'}`}>
           {!isMobile && 'Administrar'} Proyectos
-        </Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={openNew}>
+        </h1>
+        <Button onClick={openNew} className="gap-2">
+          <Plus className="h-4 w-4" />
           {!isMobile && 'Proyecto'} Nuevo
         </Button>
-      </Box>
-      <Box mb={2} sx={{ width: {xs: '100%', sm: '50%'}}}>
+      </div>
+
+      {/* Search */}
+      <div className="w-full md:w-1/2">
         <SearchInput
           initialValue={query}
           onSearch={onSearch}
         />
-      </Box>
+      </div>
 
-      {loading && <Typography>Cargando proyectos…</Typography>}
-      {error && <Typography color="error">{error}</Typography>}
-      {!loading && !error && (
-        <ProjectTable
-          projects={projects}
-          onEdit={openEdit}
-          onDelete={handleDelete}
-          page={page}
-          totalPages={totalPages}
-          totalCount={totalCount}
-          onPageChange={setPage}
-        />
-      )}
-      <Typography variant="body2" mt={1}>
-        Total de proyectos: {totalCount}
-      </Typography>
+      {/* Content */}
+      <div className="space-y-4">
+        {loading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-muted-foreground">Cargando proyectos…</div>
+          </div>
+        )}
+        
+        {error && (
+          <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3">
+            <div className="text-sm text-destructive">{error}</div>
+          </div>
+        )}
+        
+        {!loading && !error && (
+          <>
+            <ProjectTable
+              projects={projects}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+              page={page}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              onPageChange={setPage}
+            />
+            <div className="text-sm text-muted-foreground">
+              Total de proyectos: {totalCount}
+            </div>
+          </>
+        )}
+      </div>
 
-      <Dialog open={modalOpen} onClose={close} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {editing ? "Editar Proyecto" : "Nuevo Proyecto"}
-        </DialogTitle>
-        <DialogContent dividers>
+      {/* Modal */}
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editing ? "Editar Proyecto" : "Nuevo Proyecto"}
+            </DialogTitle>
+            <DialogDescription>
+              {editing 
+                ? "Modifica los datos del proyecto seleccionado."
+                : "Completa los datos para crear un nuevo proyecto."
+              }
+            </DialogDescription>
+          </DialogHeader>
           <ProjectForm
             projectId={editing}
             onSaved={handleSaved}
@@ -115,6 +135,6 @@ export function ProjectsAdminPage() {
           />
         </DialogContent>
       </Dialog>
-    </Box>
+    </div>
   );
 }

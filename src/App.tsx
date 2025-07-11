@@ -1,51 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { auth } from './firebase/config';
-import { onAuthStateChanged } from 'firebase/auth';
 
 // Componentes
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
-import UserManagement from './components/auth/UserManagement';
-import PermissionManager from './components/auth/PermissionManager';
-import Dashboard from './components/dashboard/Dashboard';
-import TimeEntry from './components/timesheet/TimeEntry';
-import WeeklySummary from './components/reports/WeeklySummary/WeeklySummary';
-import ApprovalManager from './components/reports/ApprovalManager';
-import ProjectList from './components/projects/ProjectList';
-import Layout from '@/components/layout/Layout';
-import Loading from '@/components/ui/Loading';
+import LoginPage from '@/features/auth/pages/LoginPage';
+import RegisterPage from '@/features/auth/pages/RegisterPage';
+import { DashboardPage } from '@/features/dashboard';
+import { WeeklySummaryPage } from '@/features/weekly-summary';
+import TimeEntry from '@/features/time-entry/pages/TimeEntryPage';
+import { AppLoader } from '@/shared/components/ui/AppLoader';
 import { useAuth } from '@/shared/hooks/useAuth';
 
 import { ProjectsAdminPage } from '@/features/projects/pages/ProjectsAdminPage';
+import { ProjectDetailPage } from '@/features/projects/pages/ProjectDetailPage';
+import { UsersAdminPage } from '@/features/users/pages/UsersAdminPage';
+import { UserProjectsPage } from '@/features/users/pages/UserProjectsPage';
+import { MainLayout } from './layouts/main-layout';
 
 function App() {
   const { loading, user } = useAuth();
 
   if (loading) {
-    return <Loading />;
+    return <AppLoader text="Verificando autenticación..." />;
   }
 
   return (
     <Routes>
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-      <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
+      <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" />} />
       
-      <Route path="/" element={user ? <Layout /> : <Navigate to="/login" />}>
-        <Route index element={<Dashboard />} />
+      <Route path="/" element={user ? <MainLayout /> : <Navigate to="/login" />}>
+        <Route index element={<DashboardPage />} />
         <Route
           path="projects"
           element={
-            user?.role === 'admin'
+            ['admin', 'pm'].includes(user?.role ?? '')
               ? <ProjectsAdminPage />
               : <Navigate to="/" replace />
           }
-      />
+        />
+        <Route
+          path="projects/:id"
+          element={
+            ['admin', 'pm'].includes(user?.role ?? '')
+              ? <ProjectDetailPage />
+              : <Navigate to="/" replace />
+          }
+        />
         <Route path="time-entry" element={<TimeEntry />} />
-        <Route path="weekly-summary" element={<WeeklySummary />} />
-        <Route path="users" element={<UserManagement />} />
-        <Route path="permissions" element={<PermissionManager />} />
-        <Route path="approvals" element={<ApprovalManager />} />
+        <Route path="weekly-summary" element={<WeeklySummaryPage />} />
+        <Route 
+          path="users" 
+          element={
+            user?.role === 'admin'
+              ? <UsersAdminPage />
+              : <Navigate to="/" replace />
+          }
+        />
+        <Route 
+          path="users/:userId/projects" 
+          element={
+            user?.role === 'admin'
+              ? <UserProjectsPage />
+              : <Navigate to="/" replace />
+          }
+        />
       </Route>
     </Routes>
   );

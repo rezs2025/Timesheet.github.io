@@ -1,6 +1,6 @@
 // src/features/projects/services/projects.service.ts
 import { api } from '@/shared/services/api';
-import type { Project } from '@/shared/types/project';
+import type { Project, UserProjectDetail } from '@/shared/types/project';
 
 export interface PaginatedProjects {
   projects: Project[];
@@ -15,7 +15,7 @@ export interface CreateProjectDto {
   address?: string;
   latitude: number;
   longitude: number;
-  lunchTime: number;
+  lunchMinutes: number;
 }
 
 export interface UpdateProjectDto extends Partial<CreateProjectDto> {}
@@ -52,5 +52,10 @@ export const projectsService = {
 
   remove: async (id: string): Promise<void> => {
     await api.delete(`/projects/${id}`);
+  },
+
+  getProjectUsers: async (projectId: string): Promise<UserProjectDetail[]> => {
+    const response = await api.get(`/projects/${projectId}/users`);
+    return response.data.users;
   }
 };

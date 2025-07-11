@@ -34,7 +34,27 @@ export function useProjects(
   const [totalCount, setTotalCount] = useState(0);
   const [query, setQuery] = useState(initialQuery)
 
-  const fetchPage = useCallback(async () => {
+  useEffect(() => {
+    const fetchPage = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const { projects, totalCount, totalPages } =
+          await projectsService.findAll(page, pageSize, query);
+        setProjects(projects);
+        setTotalCount(totalCount);
+        setTotalPages(totalPages);
+      } catch (err: any) {
+        setError(err.response?.data?.message ?? "Error al cargar proyectos");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPage();
+  }, [page, pageSize, query]);
+
+  const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -48,11 +68,7 @@ export function useProjects(
     } finally {
       setLoading(false);
     }
-  }, [page, query]);
-
-  useEffect(() => {
-    fetchPage();
-  }, [fetchPage]);
+  }, [page, pageSize, query]);
 
   return {
     projects,
@@ -64,6 +80,6 @@ export function useProjects(
     query,
     setPage,
     setQuery,
-    refresh: fetchPage,
+    refresh,
   };
 }

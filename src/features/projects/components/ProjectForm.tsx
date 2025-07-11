@@ -3,10 +3,11 @@ import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { CreateProjectDto, projectsService } from "../services/project.service";
 import type { Project } from "@/shared/types/project";
+import { MapPin, Loader2 } from "lucide-react";
 
-import { TextField, Grid, Button, CircularProgress } from "@mui/material";
-
-import { LocationOn as LocationOnIcon } from "@mui/icons-material";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
 
 interface Props {
   projectId: string | null;
@@ -28,7 +29,7 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
       address: "",
       latitude: 0,
       longitude: 0,
-      lunchTime: 60,
+      lunchMinutes: 0,
     },
   });
 
@@ -41,7 +42,7 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
           address: p.address,
           latitude: p.latitude,
           longitude: p.longitude,
-          lunchTime: p.lunchTime,
+          lunchMinutes: p.lunchMinutes,
         })
       );
     }
@@ -74,61 +75,78 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={2}>
-        {/* Nombre */}
-        <Grid item xs={12}>
-          <Controller
-            name="name"
-            control={control}
-            rules={{ required: "El nombre es obligatorio" }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Nombre"
-                fullWidth
-                error={!!errors.name}
-                helperText={errors.name?.message}
-              />
-            )}
-          />
-        </Grid>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Nombre */}
+      <div className="space-y-2">
+        <Label htmlFor="name">Nombre *</Label>
+        <Controller
+          name="name"
+          control={control}
+          rules={{ required: "El nombre es obligatorio" }}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="name"
+              placeholder="Nombre del proyecto"
+              className={errors.name ? "border-destructive" : ""}
+            />
+          )}
+        />
+        {errors.name && (
+          <p className="text-sm text-destructive">{errors.name.message}</p>
+        )}
+      </div>
 
-        {/* Descripción */}
-        <Grid item xs={12}>
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="Descripción" fullWidth />
-            )}
-          />
-        </Grid>
+      {/* Descripción */}
+      <div className="space-y-2">
+        <Label htmlFor="description">Descripción</Label>
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="description"
+              placeholder="Descripción del proyecto (opcional)"
+            />
+          )}
+        />
+      </div>
 
-        {/* Dirección */}
-        <Grid item xs={12}>
-          <Controller
-            name="address"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="Dirección" fullWidth />
-            )}
-          />
-        </Grid>
+      {/* Dirección */}
+      <div className="space-y-2">
+        <Label htmlFor="address">Dirección</Label>
+        <Controller
+          name="address"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="address"
+              placeholder="Dirección del proyecto"
+            />
+          )}
+        />
+      </div>
 
-        {/* Botón para obtener ubicación */}
-        <Grid item xs={12}>
-          <Button
-            variant="outlined"
-            startIcon={<LocationOnIcon />}
-            onClick={handleGetLocation}
-          >
-            Obtener ubicación actual
-          </Button>
-        </Grid>
+      {/* Botón para obtener ubicación */}
+      <div className="flex justify-start">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleGetLocation}
+          className="gap-2"
+        >
+          <MapPin className="h-4 w-4" />
+          Obtener ubicación actual
+        </Button>
+      </div>
 
+      {/* Coordenadas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Latitud */}
-        <Grid item xs={6}>
+        <div className="space-y-2">
+          <Label htmlFor="latitude">Latitud *</Label>
           <Controller
             name="latitude"
             control={control}
@@ -138,13 +156,13 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
               max: { value: 90, message: "Max 90" },
             }}
             render={({ field }) => (
-              <TextField
+              <Input
                 {...field}
-                label="Latitud"
+                id="latitude"
                 type="number"
-                fullWidth
-                error={!!errors.latitude}
-                helperText={errors.latitude?.message}
+                step="any"
+                placeholder="Ej: -33.4489"
+                className={errors.latitude ? "border-destructive" : ""}
                 onChange={(e) =>
                   field.onChange(
                     e.target.value === "" ? "" : Number(e.target.value)
@@ -154,10 +172,14 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
               />
             )}
           />
-        </Grid>
+          {errors.latitude && (
+            <p className="text-sm text-destructive">{errors.latitude.message}</p>
+          )}
+        </div>
 
         {/* Longitud */}
-        <Grid item xs={6}>
+        <div className="space-y-2">
+          <Label htmlFor="longitude">Longitud *</Label>
           <Controller
             name="longitude"
             control={control}
@@ -167,13 +189,13 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
               max: { value: 180, message: "Max 180" },
             }}
             render={({ field }) => (
-              <TextField
+              <Input
                 {...field}
-                label="Longitud"
+                id="longitude"
                 type="number"
-                fullWidth
-                error={!!errors.longitude}
-                helperText={errors.longitude?.message}
+                step="any"
+                placeholder="Ej: -70.6693"
+                className={errors.longitude ? "border-destructive" : ""}
                 onChange={(e) =>
                   field.onChange(
                     e.target.value === "" ? "" : Number(e.target.value)
@@ -183,51 +205,58 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
               />
             )}
           />
-        </Grid>
+          {errors.longitude && (
+            <p className="text-sm text-destructive">{errors.longitude.message}</p>
+          )}
+        </div>
+      </div>
 
-        {/* Lunch Time */}
-        <Grid item xs={12}>
-          <Controller
-            name="lunchTime"
-            control={control}
-            rules={{
-              required: "Tiempo de lunch obligatorio",
-              min: { value: 0, message: "Min 0" },
-            }}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Lunch Time (min)"
-                type="number"
-                fullWidth
-                error={!!errors.lunchTime}
-                helperText={errors.lunchTime?.message}
-                onChange={(e) =>
-                  field.onChange(
-                    e.target.value === "" ? "" : Number(e.target.value)
-                  )
-                }
-                value={field.value ?? ""}
-              />
-            )}
-          />
-        </Grid>
+      {/* Tiempo de almuerzo */}
+      <div className="space-y-2">
+        <Label htmlFor="lunchMinutes">Tiempo de almuerzo (minutos) *</Label>
+        <Controller
+          name="lunchMinutes"
+          control={control}
+          rules={{
+            required: "Tiempo de almuerzo obligatorio",
+            min: { value: 0, message: "Min 0" },
+          }}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="lunchMinutes"
+              type="number"
+              placeholder="60"
+              className={errors.lunchMinutes ? "border-destructive" : ""}
+              onChange={(e) =>
+                field.onChange(
+                  e.target.value === "" ? "" : Number(e.target.value)
+                )
+              }
+              value={field.value ?? ""}
+            />
+          )}
+        />
+        {errors.lunchMinutes && (
+          <p className="text-sm text-destructive">{errors.lunchMinutes.message}</p>
+        )}
+      </div>
 
-        {/* Botones */}
-        <Grid item xs={12} display="flex" justifyContent="flex-end" mt={2}>
-          <Button onClick={onCancel} disabled={isSubmitting} sx={{ mr: 1 }}>
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isSubmitting}
-            startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
-          >
-            {projectId ? "Guardar" : "Crear"}
-          </Button>
-        </Grid>
-      </Grid>
+      {/* Botones */}
+      <div className="flex justify-end space-x-2 pt-4">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel} 
+          disabled={isSubmitting}
+        >
+          Cancelar
+        </Button>
+        <Button type="submit" disabled={isSubmitting} className="gap-2">
+          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {projectId ? "Guardar" : "Crear"}
+        </Button>
+      </div>
     </form>
   );
 }

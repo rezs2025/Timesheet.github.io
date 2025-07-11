@@ -1,3 +1,5 @@
+import { AssignmentType } from "./user";
+
 export interface Project {
   id: string;
   name: string;
@@ -5,8 +7,33 @@ export interface Project {
   address?: string;
   latitude: number;
   longitude: number;
-  lunchTime: number;
+  lunchMinutes: number;
   createdDate: string;  // ISO datetime string
   updatedDate: string;  // ISO datetime string
   deletedDate?: string; // ISO datetime string or undefined
+}
+
+
+export interface UserProjectDetail {
+  assignmentType: AssignmentType;
+  createdDate:    Date;
+  deletedDate:    null;
+  email:          string;
+  fullName:       string;
+  id:             string;
+  isActive:       boolean;
+  lastTimesheet:  LastTimesheet;
+  updatedDate:    Date;
+}
+
+export interface LastTimesheet {
+  id:           string;
+  startTime:    Date;
+  createdDate:  Date;
+  deletedDate:  null;
+  deviceToken:  string;
+  endTime:      Date;
+  lunchMinutes: number;
+  updatedDate:  Date;
+  role:         string;
 }

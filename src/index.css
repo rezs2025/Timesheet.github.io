@@ -118,3 +118,45 @@
     @apply bg-background text-foreground;
   }
 }
+
+html,
+body,
+#root {
+  @apply overflow-x-hidden;
+}
+
+/* Sonner Toast Improvements */
+[data-sonner-toast] {
+  background: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  background: hsl(142 76% 36%) !important;
+  color: hsl(355 20% 97%) !important;
+  border-color: hsl(142 76% 36%) !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  background: hsl(0 84% 60%) !important;
+  color: hsl(0 0% 98%) !important;
+  border-color: hsl(0 84% 60%) !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: hsl(355 20% 97%) !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: hsl(0 0% 98%) !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 600 !important;
+}
+
+[data-sonner-toast] [data-description] {
+  opacity: 0.9 !important;
+}

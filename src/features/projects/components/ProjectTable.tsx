@@ -1,27 +1,20 @@
 // src/features/projects/components/ProjectTable.tsx
 import React from 'react';
-import {
-  useTheme,
-  useMediaQuery,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  Box,
-  Pagination,
-  Stack,
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Edit, Trash2, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { Project } from '@/shared/types/project';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/shared/components/ui/table';
+import { Badge } from '@/shared/components/ui/badge';
 
 interface Props {
   projects: Project[];
@@ -41,100 +34,157 @@ export const ProjectTable: React.FC<Props> = ({
   totalPages,
   onPageChange,
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
-  // handler para Pagination (1-based)
-  const handleMobilePage = (_: React.ChangeEvent<unknown>, value: number) => {
-    onPageChange(value);
+  const handleViewDetails = (projectId: string) => {
+    navigate(`/projects/${projectId}`);
   };
 
+  // Componente de paginación simple
+  const PaginationControls = () => (
+    <div className="flex items-center justify-between space-x-2 py-4">
+      <div className="text-sm text-muted-foreground">
+        Página {page} de {totalPages}
+      </div>
+      <div className="flex space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(Math.max(1, page - 1))}
+          disabled={page <= 1}
+        >
+          Anterior
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+          disabled={page >= totalPages}
+        >
+          Siguiente
+        </Button>
+      </div>
+    </div>
+  );
+
   return isMobile ? (
-    <Box>
-      {projects.map(p => (
-        <Card key={p.id} variant="outlined" sx={{ mb: 2, borderRadius: 3 }}>
-          <CardContent>
-            <Typography variant="h6" sx={{ color: theme.palette.primary.light}}>{p.name}</Typography>
-            {p.description && (
-              <Typography variant="body2" color="textSecondary" sx={{ pb: 1 }}>
-                {p.description}
-              </Typography>
+    <div className="space-y-4">
+      {projects.map((project) => (
+        <Card key={project.id} className="w-full">
+          <CardHeader className="pb-1">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <span>{project.name}</span>
+              <div className="flex items-center space-x-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleViewDetails(project.id)}
+                  className="h-8 w-8 p-0"
+                >
+                  <Eye className="h-4 w-4" />
+                  <span className="sr-only">Ver detalles</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onEdit(project.id)}
+                  className="h-8 w-8 p-0"
+                >
+                  <Edit className="h-4 w-4" />
+                  <span className="sr-only">Editar proyecto</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete(project.id)}
+                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">Eliminar proyecto</span>
+                </Button>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {project.description && (
+              <p className="text-sm text-muted-foreground">
+                {project.description}
+              </p>
             )}
-            <Typography variant="body2">
-              <strong>Address:</strong> {p.address || '-'}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Coords:</strong> {`${p.latitude.toFixed(4)}, ${p.longitude.toFixed(4)}`}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Lunch:</strong> {p.lunchTime} min
-            </Typography>
+            <div className="space-y-1 text-sm">
+              <div>
+                <span className="font-medium">Dirección:</span> {project.address || '-'}
+              </div>
+              <div>
+                <span className="font-medium">Coordenadas:</span>{' '}
+                {`${project.latitude.toFixed(4)}, ${project.longitude.toFixed(4)}`}
+              </div>
+              <div>
+                <span className="font-medium">Tiempo de almuerzo:</span>{' '}
+                <Badge variant="secondary">{project.lunchMinutes} min</Badge>
+              </div>
+            </div>
           </CardContent>
-          <CardActions sx={{ bgcolor: theme.palette.primary.light }}>
-            <IconButton size="small" sx={{ color: theme.palette.background.default}} onClick={() => onEdit(p.id)}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-            <IconButton size="small" sx={{ color: theme.palette.background.default}} onClick={() => onDelete(p.id)}>
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </CardActions>
         </Card>
       ))}
-      <Stack direction="row" justifyContent="center" alignItems="center" mt={2}>
-        <Pagination
-          count={totalPages}
-          page={page}
-          onChange={handleMobilePage}
-          shape="rounded"
-          size="small"
-        />
-      </Stack>
-    </Box>
+      <PaginationControls />
+    </div>
   ) : (
-    <Paper elevation={3} sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer>
-        <Table stickyHeader>
-          <TableHead>
+    <div className="space-y-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell>Coordinates</TableCell>
-              <TableCell align="right">Lunch Time (min)</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Dirección</TableHead>
+              <TableHead className="text-right">Tiempo Almuerzo</TableHead>
+              <TableHead className="text-center">Acciones</TableHead>
             </TableRow>
-          </TableHead>
+          </TableHeader>
           <TableBody>
-            {projects.map(p => (
-              <TableRow hover key={p.id}>
-                <TableCell>{p.name}</TableCell>
-                <TableCell>{p.description || '-'}</TableCell>
-                <TableCell>{p.address || '-'}</TableCell>
-                <TableCell>{`${p.latitude.toFixed(4)}, ${p.longitude.toFixed(4)}`}</TableCell>
-                <TableCell align="right">{p.lunchTime}</TableCell>
-                <TableCell align="center">
-                  <IconButton size="small" onClick={() => onEdit(p.id)}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton size="small" color="error" onClick={() => onDelete(p.id)}>
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
+            {projects.map((project) => (
+              <TableRow key={project.id}>
+                <TableCell className="font-medium">{project.name}</TableCell>
+                <TableCell>{project.address || '-'}</TableCell>
+                <TableCell className="text-right">
+                  <Badge variant="secondary">{project.lunchMinutes} min</Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-center space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleViewDetails(project.id)}
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span className="sr-only">Ver detalles</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit(project.id)}
+                    >
+                      <Edit className="h-4 w-4" />
+                      <span className="sr-only">Editar proyecto</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete(project.id)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Eliminar proyecto</span>
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
-
-      <Box display="flex" justifyContent="flex-end" p={2}>
-        <Pagination
-          count={totalPages}
-          page={page}
-          onChange={handleMobilePage}
-          showFirstButton
-          showLastButton
-        />
-      </Box>
-    </Paper>
+      </div>
+      <PaginationControls />
+    </div>
   );
 };

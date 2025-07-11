@@ -3,23 +3,15 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { TooltipProvider } from '@/shared/components/ui/tooltip';
+import { Toaster } from '@/shared/components/ui/sonner';
 import { AuthProvider } from '@/shared/hooks/useAuth';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-    background: {
-      default: '#f5f5f5',
-    },
-  },
-});
+// Initialize deviceId in localStorage if it doesn't exist
+if (!localStorage.getItem('deviceId')) {
+  const deviceId = crypto.randomUUID();
+  localStorage.setItem('deviceId', deviceId);
+}
 
 const container = document.getElementById('root');
 if (!container) {
@@ -28,13 +20,18 @@ if (!container) {
 const root = ReactDOM.createRoot(container);
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-      </ThemeProvider>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
+      <TooltipProvider>
+        <AuthProvider>
+          <App />
+          <Toaster />
+        </AuthProvider>
+      </TooltipProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
