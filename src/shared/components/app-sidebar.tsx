@@ -47,12 +47,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "/users",
       icon: IconUsers,
     },
-    {
-      id: 'approvals',
-      title: "Aprobaciones",
-      url: "/approvals",
-      icon: IconCircleCheck,
-    },
+    // {
+    //   id: 'approvals',
+    //   title: "Aprobaciones",
+    //   url: "/approvals",
+    //   icon: IconCircleCheck,
+    // },
   ] : []
 
   const navPM = user?.role === 'pm' ? [
