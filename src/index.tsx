@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { TooltipProvider } from '@/shared/components/ui/tooltip';
 import { Toaster } from '@/shared/components/ui/sonner';
 import { AuthProvider } from '@/shared/hooks/useAuth';
+import { registerServiceWorker } from './registerServiceWorker';
 
 // Initialize deviceId in localStorage if it doesn't exist
 if (!localStorage.getItem('deviceId')) {
@@ -35,3 +36,5 @@ root.render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+registerServiceWorker();
