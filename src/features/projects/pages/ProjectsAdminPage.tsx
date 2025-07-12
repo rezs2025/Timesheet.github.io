@@ -16,6 +16,8 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { SearchInput } from "@/shared/components/SearchInput";
+import { ConfirmDialog } from "@/shared/components/confirm-dialog";
+import { toast } from "sonner";
 
 export function ProjectsAdminPage() {
   const {
@@ -32,6 +34,8 @@ export function ProjectsAdminPage() {
   } = useProjects(1, 10);
   const [editing, setEditing] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [deletingProjectId, setDeletingProjectId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const isMobile = useIsMobile();
 
   const openNew = () => {
@@ -51,9 +55,29 @@ export function ProjectsAdminPage() {
     refresh();
   };
 
-  const handleDelete = async (id: string) => {
-    await projectsService.remove(id);
-    refresh();
+  const handleDelete = (id: string) => {
+    setDeletingProjectId(id);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingProjectId) return;
+    
+    setIsDeleting(true);
+    try {
+      await projectsService.remove(deletingProjectId);
+      toast.success('Proyecto eliminado correctamente');
+      setDeletingProjectId(null);
+      refresh();
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      toast.error('Error al eliminar el proyecto');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeletingProjectId(null);
   };
 
   const onSearch = useCallback((q: string) => {
@@ -135,6 +159,15 @@ export function ProjectsAdminPage() {
           />
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deletingProjectId}
+        title="¿Estás seguro?"
+        description="Esta acción no se puede deshacer. Se eliminará permanentemente el proyecto seleccionado y todos sus datos asociados."
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        loading={isDeleting}
+      />
     </div>
   );
 }
