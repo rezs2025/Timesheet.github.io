@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { format, startOfWeek, addWeeks, subWeeks } from 'date-fns';
+import { startOfWeek, addWeeks, subWeeks } from 'date-fns';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { AppLoader } from '@/shared/components/ui/AppLoader';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Users, Clock, Building } from 'lucide-react';
+import { Users, Clock } from 'lucide-react';
 
 import WeekSelector from './WeekSelector';
 import FiltersPanel from './FiltersPanel';
 import TimeEntriesTable from './TimeEntriesTable';
-import SummaryCard from './SummaryCard';
-import { calculateHoursWorked, calculateUserPerformance, getUniqueUsers, getUniqueProjects } from '../utils/weeklyCalculations';
-import { TeamStats } from '../types';
-import { TimeEntry } from '@/features/time-entry/types';
+import { calculateHoursWorked } from '../utils/weeklyCalculations';
+import { TimeEntry, UpdateTimeEntryData } from '@/features/time-entry/types';
 import { Project } from '@/shared/types/project';
 import { User } from '@/shared/types/user';
 import { toast } from 'sonner';
+import EditEntryDialog from './EditEntryDialog';
+import { timeEntryService } from '@/features/time-entry/services/timeEntry.service';
 import { useWeeklyPMSummary } from '../hooks/useWeeklyPMSummary';
 import { projectsService } from '@/features/projects/services/project.service';
+import { ConfirmDialog } from '@/shared/components/confirm-dialog';
 
 const ManagerWeeklySummary = () => {
   const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -25,10 +26,14 @@ const ManagerWeeklySummary = () => {
   const [selectedUser, setSelectedUser] = useState('all');
   const [projects, setProjects] = useState<Project[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [editingEntry, setEditingEntry] = useState<TimeEntry | null>(null);
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const [deletingEntryId, setDeletingEntryId] = useState<string | null>(null);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   
   const { user, loading: loadingUser } = useAuth();
   
-  const { loading, weekSummary } = useWeeklyPMSummary({
+  const { loading, weekSummary, refetch } = useWeeklyPMSummary({
     currentWeekStart,
     projectId: selectedProject === 'all' ? undefined : selectedProject,
     userId: selectedUser === 'all' ? undefined : selectedUser,
@@ -39,6 +44,7 @@ const ManagerWeeklySummary = () => {
       try {
         const fetchedProjects = await projectsService.findAll();
         setProjects(fetchedProjects.projects || []);
+        
       } catch (error) {
         console.error("Error fetching projects and users:", error);
       }
@@ -53,6 +59,57 @@ const ManagerWeeklySummary = () => {
 
   const handleNextWeek = () => {
     setCurrentWeekStart((prevWeek) => addWeeks(prevWeek, 1));
+  };
+
+  const handleEditSubmit = async (editForm: UpdateTimeEntryData) => {
+    if (!editingEntry) return;
+    
+    setIsEditLoading(true);
+    try {
+      await timeEntryService.updateTimeEntry(editingEntry.id, {
+        startTime: editForm.startTime,
+        endTime: editForm.endTime,
+        projectId: editForm.projectId,
+      });
+      
+      toast.success('Registro actualizado correctamente');
+      setEditingEntry(null);
+      
+      // Refresh the data
+      await refetch();
+    } catch (error) {
+      console.error('Error updating time entry:', error);
+      toast.error('Error al actualizar el registro');
+    } finally {
+      setIsEditLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (entry: TimeEntry) => {
+    setDeletingEntryId(entry.id);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingEntryId) return;
+    
+    setIsDeleteLoading(true);
+    try {
+      await timeEntryService.deleteTimeEntry(deletingEntryId);
+      toast.success('Registro eliminado correctamente');
+      setDeletingEntryId(null);
+      
+      // Refresh the data
+      await refetch();
+    } catch (error) {
+      console.error('Error deleting time entry:', error);
+      toast.error('Error al eliminar el registro');
+    } finally {
+      setIsDeleteLoading(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeletingEntryId(null);
   };
 
   if (loadingUser || loading) {
@@ -165,8 +222,26 @@ const ManagerWeeklySummary = () => {
         showProjectColumn={true}
         showEditButton={true}
         onEditClick={(entry) => {
-          toast.error('Funcionalidad de edición no implementada aún.');
+          setEditingEntry(entry);
         }}
+        onDeleteClick={handleDeleteClick}
+        showDeleteButton={true}
+      />
+
+      <EditEntryDialog
+        editingEntry={editingEntry}
+        onClose={() => setEditingEntry(null)}
+        onSubmit={handleEditSubmit}
+        projects={projects}
+        loading={isEditLoading}
+      />
+      <ConfirmDialog
+        open={!!deletingEntryId}
+        title="¿Estás seguro?"
+        description="Esta acción no se puede deshacer. Se eliminará permanentemente el registro de tiempo seleccionado."
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        loading={isDeleteLoading}
       />
     </div>
   );

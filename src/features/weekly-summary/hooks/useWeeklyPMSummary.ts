@@ -24,38 +24,39 @@ export const useWeeklyPMSummary = ({
     timeEntries: [],
   });
 
+  const refetch = async () => {
+    try {
+      setLoading(true);
+      const weekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 1 });
+      
+      const params: any = {
+        startDate: currentWeekStart.toISOString(),
+        endDate: weekEnd.toISOString(),
+      };
+
+      if (projectId) params.projectId = projectId;
+      if (userId) params.userId = userId;
+
+      const weekSummary = await timeEntryService.getWeekPMSummary(params);
+      setWeekSummary(weekSummary);
+    } catch (error) {
+      console.error(error);
+      toast.error('Error al cargar datos', {
+        description: 'No se pudieron cargar las horas del período',
+        duration: 4000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchWeekData = async () => {
-      try {
-        setLoading(true);
-        const weekEnd = endOfWeek(currentWeekStart, { weekStartsOn: 1 });
-        
-        const params: any = {
-          startDate: currentWeekStart.toISOString(),
-          endDate: weekEnd.toISOString(),
-        };
-
-        if (projectId) params.projectId = projectId;
-        if (userId) params.userId = userId;
-
-        const weekSummary = await timeEntryService.getWeekPMSummary(params);
-        setWeekSummary(weekSummary);
-      } catch (error) {
-        console.error(error);
-        toast.error('Error al cargar datos', {
-          description: 'No se pudieron cargar las horas del período',
-          duration: 4000,
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWeekData();
+    refetch();
   }, [currentWeekStart, projectId, userId]);
 
   return {
     loading,
     weekSummary,
+    refetch,
   };
 };

@@ -4,13 +4,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import { TimeEntry, UpdateTimeEntryData } from '@/features/time-entry/types';
 
 interface EditEntryDialogProps {
-  editingEntry: any;
+  editingEntry: TimeEntry | null;
   onClose: () => void;
-  onSubmit: (editForm: any) => void;
+  onSubmit: (editForm: UpdateTimeEntryData) => void;
   projects: any[];
-  users: any[];
   loading: boolean;
 }
 
@@ -19,30 +19,49 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
   onClose,
   onSubmit,
   projects,
-  users,
   loading,
 }) => {
   const [editForm, setEditForm] = useState({
+    checkInDate: '',
     checkInTime: '',
+    checkOutDate: '',
     checkOutTime: '',
-    lunchDuration: '60',
     projectId: '',
   });
 
   useEffect(() => {
     if (editingEntry) {
+      // Parse ISO dates to separate date and time components
+      const checkInDate = editingEntry.startTime ? new Date(editingEntry.startTime) : null;
+      const checkOutDate = editingEntry.endTime ? new Date(editingEntry.endTime) : null;
+      
       setEditForm({
-        checkInTime: editingEntry.checkInTime || '',
-        checkOutTime: editingEntry.checkOutTime || '',
-        lunchDuration: editingEntry.lunchDuration || '60',
-        projectId: editingEntry.projectId || '',
+        checkInDate: checkInDate ? checkInDate.toISOString().split('T')[0] : '',
+        checkInTime: checkInDate ? checkInDate.toTimeString().slice(0, 5) : '',
+        checkOutDate: checkOutDate ? checkOutDate.toISOString().split('T')[0] : '',
+        checkOutTime: checkOutDate ? checkOutDate.toTimeString().slice(0, 5) : '',
+        projectId: editingEntry.project.id || '',
       });
     }
   }, [editingEntry]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(editForm);
+    
+    // Combine date and time
+    const checkInDate = editForm.checkInDate && editForm.checkInTime 
+      ? new Date(`${editForm.checkInDate}T${editForm.checkInTime}:00`)
+      : undefined;
+
+    const checkOutDate = editForm.checkOutDate && editForm.checkOutTime 
+      ? new Date(`${editForm.checkOutDate}T${editForm.checkOutTime}:00`)
+      : undefined;
+    
+    onSubmit({
+      startTime: checkInDate,
+      endTime: checkOutDate,
+      projectId: editForm.projectId,
+    });
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -62,41 +81,54 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="checkInTime">Hora de Entrada</Label>
-              <Input
-                id="checkInTime"
-                type="time"
-                value={editForm.checkInTime}
-                onChange={(e) => handleInputChange('checkInTime', e.target.value)}
-                required
-              />
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="checkInDate">Fecha de Entrada</Label>
+                <Input
+                  id="checkInDate"
+                  type="date"
+                  value={editForm.checkInDate}
+                  onChange={(e) => handleInputChange('checkInDate', e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="checkInTime">Hora de Entrada</Label>
+                <Input
+                  id="checkInTime"
+                  type="time"
+                  value={editForm.checkInTime}
+                  onChange={(e) => handleInputChange('checkInTime', e.target.value)}
+                  required
+                />
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="checkOutTime">Hora de Salida</Label>
-              <Input
-                id="checkOutTime"
-                type="time"
-                value={editForm.checkOutTime}
-                onChange={(e) => handleInputChange('checkOutTime', e.target.value)}
-                required
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="checkOutDate">Fecha de Salida</Label>
+                <Input
+                  id="checkOutDate"
+                  type="date"
+                  value={editForm.checkOutDate}
+                  onChange={(e) => handleInputChange('checkOutDate', e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="checkOutTime">Hora de Salida</Label>
+                <Input
+                  id="checkOutTime"
+                  type="time"
+                  value={editForm.checkOutTime}
+                  onChange={(e) => handleInputChange('checkOutTime', e.target.value)}
+                  required
+                />
+              </div>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="lunchDuration">Tiempo de Almuerzo (minutos)</Label>
-            <Input
-              id="lunchDuration"
-              type="number"
-              min="0"
-              max="120"
-              value={editForm.lunchDuration}
-              onChange={(e) => handleInputChange('lunchDuration', e.target.value)}
-              required
-            />
           </div>
 
           {projects.length > 0 && (

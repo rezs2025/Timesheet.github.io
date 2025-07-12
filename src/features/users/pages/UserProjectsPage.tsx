@@ -27,17 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/shared/components/ui/alert-dialog';
+import { ConfirmDialog } from '@/shared/components/confirm-dialog';
 
 export function UserProjectsPage() {
   const { userId } = useParams<{ userId: string }>();
@@ -307,27 +297,14 @@ export function UserProjectsPage() {
       </Dialog>
 
       {/* Dialog de confirmación para eliminar */}
-      <AlertDialog open={!!projectToDelete} onOpenChange={() => setProjectToDelete(null)}>
-        <AlertDialogContent className="max-w-[90vw] sm:max-w-lg">
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar asignación?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminará permanentemente la asignación del proyecto para este usuario.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleRemoveAssignment}
-              disabled={loading}
-            >
-              {loading ? 'Eliminando...' : 'Eliminar'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={!!projectToDelete}
+        title="¿Eliminar asignación?"
+        description="Esta acción no se puede deshacer. Se eliminará permanentemente la asignación del proyecto para este usuario."
+        onCancel={() => setProjectToDelete(null)}
+        onConfirm={handleRemoveAssignment}
+        loading={loading}
+      />
     </div>
   );
 }

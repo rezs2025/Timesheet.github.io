@@ -3,6 +3,7 @@ import type {
   TimeEntry,
   CreateTimeEntryData,
   TimeEntryFilters,
+  UpdateTimeEntryData,
 } from "../types";
 import { api } from "@/shared/services/api";
 
@@ -19,10 +20,14 @@ export const timeEntryService = {
 
   updateTimeEntry: async (
     id: string,
-    data: Partial<TimeEntry>
+    data: UpdateTimeEntryData
   ): Promise<TimeEntry> => {
     const response = await api.patch<TimeEntry>(`time-sheets/${id}`, data);
     return response.data;
+  },
+
+  deleteTimeEntry: async (id: string): Promise<void> => {
+    await api.delete(`time-sheets/${id}`);
   },
 
   getTimeEntries: async (

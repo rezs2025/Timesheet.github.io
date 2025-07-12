@@ -32,6 +32,13 @@ export interface CreateTimeEntryData {
   deviceToken?: string;
 }
 
+export interface UpdateTimeEntryData {
+  startTime?: Date;
+  endTime?: Date;
+  lunchMinutes?: number;
+  projectId?: string;
+}
+
 export interface WeeklyTimeEntry {
   date: string;
   entries: TimeEntry[];

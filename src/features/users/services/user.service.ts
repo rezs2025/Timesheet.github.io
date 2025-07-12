@@ -15,9 +15,10 @@ export const usersService = {
     page: number = 1,
     limit: number = 10,
     query: string = '',
+    roleFilter?: 'pm' | 'employee'
   ): Promise<PaginatedUsers> => {
     const response = await api.get<PaginatedUsers>('/users', {
-      params: { page, limit, query }
+      params: { page, limit, query, role: roleFilter }
     });
     return response.data;
   },

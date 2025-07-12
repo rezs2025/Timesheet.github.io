@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Edit } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
@@ -14,20 +14,24 @@ interface TimeEntriesTableProps {
   entries?: TimeEntry[];
   user: User | null;
   onEditClick?: (entry: any) => void;
+  onDeleteClick?: (entry: any) => void;
   calculateHoursWorked: (entry: TimeEntry) => string;
   showUserColumn?: boolean;
   showProjectColumn?: boolean;
   showEditButton?: boolean;
+  showDeleteButton?: boolean;
 }
 
 const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
   entries,
   user,
   onEditClick,
+  onDeleteClick,
   calculateHoursWorked,
   showUserColumn = true,
   showProjectColumn = true,
   showEditButton = true,
+  showDeleteButton = false,
 }) => {
 
   const getStatusBadge = (entry: TimeEntry) => {
@@ -54,7 +58,7 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
                 <TableHead>Salida</TableHead>
                 <TableHead>Horas</TableHead>
                 <TableHead>Estado</TableHead>
-                {showEditButton && <TableHead>Acciones</TableHead>}
+                {(showEditButton || showDeleteButton) && <TableHead>Acciones</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -87,18 +91,30 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
                       <TableCell>
                         {getStatusBadge(entry)}
                       </TableCell>
-                      {showEditButton && onEditClick && (
+                      {(showEditButton || showDeleteButton) && (
                         <TableCell>
-                          {(user?.role === 'admin' || user?.role === 'pm' || user?.id === entry.user.id) && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => onEditClick(entry)}
-                              className="h-8 w-8 p-0"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          )}
+                          <div className="flex gap-1">
+                            {showEditButton && onEditClick && (user?.role === 'admin' || user?.role === 'pm' || user?.id === entry.user.id) && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onEditClick(entry)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {showDeleteButton && onDeleteClick && (user?.role === 'admin' || user?.role === 'pm') && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onDeleteClick(entry)}
+                                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       )}
                     </TableRow>

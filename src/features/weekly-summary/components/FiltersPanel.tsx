@@ -4,6 +4,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Label } from '@/shared/components/ui/label';
+import { UserSearch } from '@/features/users/components/UserSearch';
 
 interface FiltersPanelProps {
   loadingUser: boolean;
@@ -60,19 +61,13 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
           {showUserFilter && user?.role === 'admin' && (
             <div className="space-y-2">
               <Label htmlFor="user-select">Empleado</Label>
-              <Select value={selectedUser} onValueChange={onUserChange}>
-                <SelectTrigger id="user-select">
-                  <SelectValue placeholder="Todos los empleados" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos los empleados</SelectItem>
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      {user.name || user.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <UserSearch
+                value={selectedUser}
+                onValueChange={(value) => onUserChange(value)}
+                placeholder="Buscar y seleccionar empleado..."
+                disabled={loading}
+                roleFilter='employee'
+              />
             </div>
           )}
         </div>
