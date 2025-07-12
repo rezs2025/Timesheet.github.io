@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useAuth } from '@/shared/hooks/useAuth';
-import { Lock } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 export function LoginPage({
   className,
@@ -32,8 +32,8 @@ export function LoginPage({
           <form onSubmit={handleSubmit} className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
-                <div className="bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mb-4">
-                  <Lock className="h-6 w-6" />
+                <div className="bg-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                  <img src={logo} alt="Logo" className="w-14 h-14" />
                 </div>
                 <h1 className="text-2xl font-bold">Bienvenido de vuelta</h1>
                 <p className="text-balance text-muted-foreground">
