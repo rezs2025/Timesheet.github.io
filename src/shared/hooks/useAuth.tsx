@@ -6,7 +6,7 @@ import {
   useContext,
 } from "react";
 import { authService, LoginDto, RegisterDto } from "../services/auth.service";
-import { User, UserProject } from "@/shared/types/user";
+import { User } from "@/shared/types/user";
 import useProjectUserStore from "@/store/user-project.store";
 import { usersService } from "@/features/users/services/user.service";
 
@@ -26,6 +26,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { setSelectedProject, setProjects } = useProjectUserStore();
+
+  useEffect(() => {
+    const handleUnauthorized = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      const message = detail?.message || "Sesión expirada.";
+      
+      localStorage.removeItem("token");
+      setUser(null);
+      setError(message);
+    };
+
+    window.addEventListener('unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('unauthorized', handleUnauthorized);
+    };
+  }, []);
 
   // Inicializar axios con token si existe
   useEffect(() => {
