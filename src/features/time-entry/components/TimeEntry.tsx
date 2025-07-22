@@ -142,8 +142,14 @@ export const TimeEntry: React.FC = () => {
           <CardDescription
             className={clsx(projects.length > 1 && "my-1")}
           >
-            {projects.length > 1 ? 'Seleccione Proyecto' : `Proyecto: ${currentEntry ? currentEntry.project.name : selectedProject?.project.name}`}
-            { projects.length > 1 &&
+            {currentEntry
+              ? `Proyecto: ${currentEntry.project.name}`
+              : projects.length > 1
+                ? 'Seleccione Proyecto'
+                : selectedProject
+                  ? `Proyecto: ${selectedProject.project.name}`
+                  : ''}
+            { projects.length > 1 && !isWorking &&
             
               <ProjectSelector
                 projects={projects}
@@ -430,6 +436,9 @@ export const TimeEntry: React.FC = () => {
 
   async function handleStopWork() {
     if (!currentEntry || !location || !selectedProject) return;
+    if (!validateLocation()) {
+      return;
+    }
     
     try {
       setLoading(true);
