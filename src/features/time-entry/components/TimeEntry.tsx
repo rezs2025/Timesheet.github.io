@@ -16,9 +16,12 @@ import { useGeolocation } from '../hooks/useGeolocation';
 import { timeEntryService } from '../services/timeEntry.service';
 import { useAuth } from '@/shared/hooks/useAuth';
 import type { TimeEntry as TimeEntryType } from '../types';
-import useUserProjectStore from '@/store/user-project.store';
 import { useElapsedTime } from '../hooks/useElapsedTime';
 import { startOfToday } from 'date-fns'
+import { ProjectSelector } from '@/shared/components/project-selector';
+import { UserProject } from '@/shared/types/user';
+import { usersService } from "@/features/users/services/user.service";
+import clsx from 'clsx';
 
 export const TimeEntry: React.FC = () => {
   const [date] = useState(new Date());
@@ -29,7 +32,8 @@ export const TimeEntry: React.FC = () => {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [showLocationUpdate, setShowLocationUpdate] = useState(false);
   const { user, loading: loadingUser } = useAuth();
-  const { projects, selectedProject } = useUserProjectStore()
+  const [projects, setProjects] = useState<UserProject[]>([]);
+  const [selectedProject, setSelectedProject] = useState<UserProject | null>(null);
   const startDate = currentEntry ? new Date(currentEntry.startTime) : null
   const elapsed = useElapsedTime(startDate)
   const {
@@ -41,6 +45,22 @@ export const TimeEntry: React.FC = () => {
     timeout: 15000,
     enableHighAccuracy: true,
   });
+
+  useEffect(() => {
+    const initializeProjects = async () => {
+      if (!user) return;
+      try {
+        const projects = await usersService.getUserProjects(user.id);
+        if (projects.length) {
+          setSelectedProject(projects[0]);
+          setProjects(projects);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    initializeProjects();
+  }, [user]);
 
   useEffect(() => {
     const endDate = new Date().toISOString();
@@ -119,8 +139,18 @@ export const TimeEntry: React.FC = () => {
             <Clock className="h-5 w-5" />
             {format(date, "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}
           </CardTitle>
-          <CardDescription>
-            Proyecto: { currentEntry ? currentEntry.project.name : selectedProject?.project.name }
+          <CardDescription
+            className={clsx(projects.length > 1 && "my-1")}
+          >
+            {projects.length > 1 ? 'Seleccione Proyecto' : `Proyecto: ${currentEntry ? currentEntry.project.name : selectedProject?.project.name}`}
+            { projects.length > 1 &&
+            
+              <ProjectSelector
+                projects={projects}
+                selectedProject={selectedProject}
+                onSelectProject={setSelectedProject}
+              />
+            }
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

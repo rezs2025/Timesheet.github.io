@@ -1,7 +1,5 @@
-import { Button } from "@/shared/components/ui/button"
 import { Separator } from "@/shared/components/ui/separator"
 import { SidebarTrigger } from "@/shared/components/ui/sidebar"
-import { ProjectSelector } from "./project-selector"
 
 export function SiteHeader() {
   return (
@@ -13,10 +11,6 @@ export function SiteHeader() {
           className="mx-2 data-[orientation=vertical]:h-4 shrink-0 md:block hidden"
         />
         <h1 className="text-base font-medium shrink-0 hidden md:block">Documents</h1>
-        <div className="flex-1" />
-        <div className="max-w-[280px] md:max-w-sm lg:max-w-md xl:max-w-lg min-w-0">
-          <ProjectSelector />
-        </div>
       </div>
     </header>
   )

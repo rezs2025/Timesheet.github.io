@@ -25,14 +25,20 @@ import {
   CommandItem,
 } from '@/shared/components/ui/command'
 import { Check, ChevronDown, Briefcase, Calendar } from 'lucide-react'
-import useUserProjectStore from '@/store/user-project.store'
+import { UserProject } from '../types/user'
 
-export function ProjectSelector() {
+interface ProjectSelectorProps {
+  projects: UserProject[];
+  selectedProject: UserProject | null;
+  onSelectProject: (project: UserProject) => void;
+}
+
+export const ProjectSelector: React.FC<ProjectSelectorProps> = ({
+  projects,
+  selectedProject,
+  onSelectProject,
+}) => {
   const isDesktop = useMediaQuery('(min-width: 768px)')
-  const projects = useUserProjectStore((s) => s.projects)
-  const selected = useUserProjectStore((s) => s.selectedProject)
-  const setSelected = useUserProjectStore((s) => s.setSelectedProject)
-  
   const [open, setOpen] = React.useState(false)
   const [filter, setFilter] = React.useState('')
 
@@ -53,8 +59,8 @@ export function ProjectSelector() {
     >
       <div className="flex items-center gap-2 min-w-0">
         <Briefcase className="h-4 w-4 text-primary/60 shrink-0" />
-        <span className={`truncate ${selected ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
-          {selected?.project.name ?? 'Seleccionar proyecto'}
+        <span className={`truncate ${selectedProject ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+          {selectedProject?.project.name ?? 'Seleccionar proyecto'}
         </span>
       </div>
       <ChevronDown className="h-4 w-4 opacity-50 shrink-0 transition-transform duration-200" />
@@ -62,15 +68,18 @@ export function ProjectSelector() {
   )
 
   const list = (
-    <Command className="rounded-lg border-0">
+    <Command
+      className="rounded-lg border-0"
+      shouldFilter={false}
+    >
       <CommandInput
         placeholder="Buscar proyecto..."
         value={filter}
         onValueChange={setFilter}
-        className="border-b border-border/50 bg-background/50 placeholder:text-muted-foreground/60"
+        className="text-base border-b border-border/50 bg-background/50 placeholder:text-muted-foreground/60"
         autoFocus
       />
-      <CommandList className="max-h-[280px] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+      <CommandList className="overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
         <CommandEmpty className="py-6 text-center text-muted-foreground">
           <div className="flex flex-col items-center gap-2">
             <Briefcase className="h-8 w-8 opacity-40" />
@@ -83,7 +92,7 @@ export function ProjectSelector() {
               key={p.id}
               value={p.id}
               onSelect={() => {
-                setSelected(p)
+                onSelectProject(p)
                 setOpen(false)
               }}
               className="cursor-pointer rounded-md mx-1 my-0.5 px-3 py-2.5 transition-all duration-200 hover:bg-primary/10 aria-selected:bg-primary/10 flex items-center gap-3"
@@ -102,7 +111,7 @@ export function ProjectSelector() {
                   </div>
                 </div>
               </div>
-              {selected?.id === p.id && (
+              {selectedProject?.id === p.id && (
                 <Check className="h-4 w-4 text-primary shrink-0" />
               )}
             </CommandItem>
@@ -117,9 +126,10 @@ export function ProjectSelector() {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>{trigger}</PopoverTrigger>
         <PopoverContent 
-          side="bottom" 
-          sideOffset={4} 
-          className="w-80 p-0 bg-card/95 backdrop-blur-sm border-border/50 shadow-lg"
+          side="bottom"
+          sideOffset={4}
+          align="start"
+          className="min-w-96 p-0 backdrop-blur-sm border-border/50 shadow-lg"
         >
           {list}
         </PopoverContent>

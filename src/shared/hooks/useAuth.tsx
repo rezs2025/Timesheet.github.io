@@ -7,8 +7,6 @@ import {
 } from "react";
 import { authService, LoginDto, RegisterDto } from "../services/auth.service";
 import { User } from "@/shared/types/user";
-import useProjectUserStore from "@/store/user-project.store";
-import { usersService } from "@/features/users/services/user.service";
 
 interface AuthContextType {
   user: User | null;
@@ -25,7 +23,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { setSelectedProject, setProjects } = useProjectUserStore();
 
   useEffect(() => {
     const handleUnauthorized = (e: Event) => {
@@ -58,7 +55,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       authService
         .me()
         .then(async (u: User) => {
-          await initializeProjects(u)
           clearTimeout(timeoutId);
           setUser(u);
         })
@@ -89,7 +85,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("token", token);
       const u = await authService.me();
       setUser(u);
-      await initializeProjects(u)
     } catch (err: any) {
       setError(err.response?.data?.message || "Credenciales inválidas");
     } finally {
@@ -137,18 +132,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     setError(null);
   }, []);
-
-  const initializeProjects = async (u: User) => {
-    try {
-      const projects = await usersService.getUserProjects(u.id);
-      if (projects.length) {
-        setSelectedProject(projects[0]);
-        setProjects(projects);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <AuthContext.Provider
