@@ -18,6 +18,7 @@ import {
 import { SearchInput } from "@/shared/components/SearchInput";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { toast } from "sonner";
+import { useAuth } from '@/shared/hooks/useAuth';
 
 export function ProjectsAdminPage() {
   const {
@@ -37,7 +38,8 @@ export function ProjectsAdminPage() {
   const [deletingProjectId, setDeletingProjectId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const isMobile = useIsMobile();
-
+  const { user } = useAuth();
+  
   const openNew = () => {
     setEditing(null);
     setModalOpen(true);
@@ -92,10 +94,12 @@ export function ProjectsAdminPage() {
         <h1 className={`font-bold ${isMobile ? 'text-2xl' : 'text-3xl'}`}>
           {!isMobile && 'Administrar'} Proyectos
         </h1>
-        <Button onClick={openNew} className="gap-2">
-          <Plus className="h-4 w-4" />
-          {!isMobile && 'Proyecto'} Nuevo
-        </Button>
+        {user?.role === 'admin' && (
+          <Button onClick={openNew} className="gap-2">
+            <Plus className="h-4 w-4" />
+            {!isMobile && 'Proyecto'} Nuevo
+          </Button>
+        )}
       </div>
 
       {/* Search */}

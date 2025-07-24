@@ -15,6 +15,7 @@ import {
   TableRow 
 } from '@/shared/components/ui/table';
 import { Badge } from '@/shared/components/ui/badge';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 interface Props {
   projects: Project[];
@@ -36,6 +37,7 @@ export const ProjectTable: React.FC<Props> = ({
 }) => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleViewDetails = (projectId: string) => {
     navigate(`/projects/${projectId}`);
@@ -160,23 +162,27 @@ export const ProjectTable: React.FC<Props> = ({
                       <Eye className="h-4 w-4" />
                       <span className="sr-only">Ver detalles</span>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onEdit(project.id)}
-                    >
-                      <Edit className="h-4 w-4" />
-                      <span className="sr-only">Editar proyecto</span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDelete(project.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="sr-only">Eliminar proyecto</span>
-                    </Button>
+                    { user?.role === 'admin' && (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onEdit(project.id)}
+                        >
+                          <Edit className="h-4 w-4" />
+                          <span className="sr-only">Editar proyecto</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onDelete(project.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Eliminar proyecto</span>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>
