@@ -27,6 +27,7 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
     checkOutDate: '',
     checkOutTime: '',
     projectId: '',
+    lunchMinutes: 0,
   });
 
   useEffect(() => {
@@ -41,6 +42,7 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
         checkOutDate: checkOutDate ? checkOutDate.toISOString().split('T')[0] : '',
         checkOutTime: checkOutDate ? checkOutDate.toTimeString().slice(0, 5) : '',
         projectId: editingEntry.project.id || '',
+        lunchMinutes: editingEntry.lunchMinutes || editingEntry.project.lunchMinutes || 0,
       });
     }
   }, [editingEntry]);
@@ -61,6 +63,7 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
       startTime: checkInDate,
       endTime: checkOutDate,
       projectId: editForm.projectId,
+      lunchMinutes: Number(editForm.lunchMinutes)
     });
   };
 
@@ -129,6 +132,16 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
                 />
               </div>
             </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="lunchMinutes">Minutos de Almuerzo</Label>
+            <Input
+              id="lunchMinutes"
+              type="number"
+              min="0"
+              value={editForm.lunchMinutes}
+              onChange={(e) => handleInputChange('lunchMinutes', e.target.value)}
+            />
           </div>
 
           {projects.length > 0 && (

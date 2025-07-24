@@ -70,6 +70,7 @@ const ManagerWeeklySummary = () => {
         startTime: editForm.startTime,
         endTime: editForm.endTime,
         projectId: editForm.projectId,
+        lunchMinutes: editForm.lunchMinutes,
       });
       
       toast.success('Registro actualizado correctamente');
@@ -127,7 +128,7 @@ const ManagerWeeklySummary = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-4 py-6 sm:px-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
           {user?.role === 'admin' ? 'Resumen del Sistema' : 'Resumen del Equipo'}
