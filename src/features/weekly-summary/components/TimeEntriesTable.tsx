@@ -6,15 +6,16 @@ import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
 import { Badge } from '@/shared/components/ui/badge';
-import { WeekSummary } from '../types';
-import { User } from '@/shared/types/user';
+import { useSidebar } from '@/shared/components/ui/sidebar';
+import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { TimeEntry } from '@/features/time-entry/types';
+import { User } from '@/shared/types/user';
 
 interface TimeEntriesTableProps {
   entries?: TimeEntry[];
   user: User | null;
-  onEditClick?: (entry: any) => void;
-  onDeleteClick?: (entry: any) => void;
+  onEditClick?: (entry: TimeEntry) => void;
+  onDeleteClick?: (entry: TimeEntry) => void;
   calculateHoursWorked: (entry: TimeEntry) => string;
   showUserColumn?: boolean;
   showProjectColumn?: boolean;
@@ -23,7 +24,7 @@ interface TimeEntriesTableProps {
 }
 
 const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
-  entries,
+  entries = [],
   user,
   onEditClick,
   onDeleteClick,
@@ -33,22 +34,37 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
   showEditButton = true,
   showDeleteButton = false,
 }) => {
+  const { state } = useSidebar();
+  const isMobile = useIsMobile();
+  
+  // Calcular el ancho disponible basado en el estado del sidebar
+  const availableWidth = isMobile 
+    ? '100%' // En mobile el sidebar es overlay, usar todo el ancho
+    : state === 'expanded' 
+      ? 'calc(100vw - var(--sidebar-width) - 3rem)'
+      : 'calc(100vw - var(--sidebar-width-icon) - 3rem)';
 
   const getStatusBadge = (entry: TimeEntry) => {
-    if (!entry.startTime || !entry.endTime) {
-      return <Badge variant="destructive">Incompleto</Badge>;
-    }
-    return <Badge variant="default">Completo</Badge>;
+    return (!entry.startTime || !entry.endTime)
+      ? <Badge variant="destructive">Incompleto</Badge>
+      : <Badge variant="default">Completo</Badge>;
   };
+
+  const columnsCount =
+    5 +
+    (showUserColumn ? 1 : 0) +
+    (showProjectColumn ? 1 : 0) +
+    (showEditButton || showDeleteButton ? 1 : 0);
 
   return (
     <Card className="mb-6">
       <CardHeader>
         <CardTitle>Registro de Horas</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto" style={{ width: availableWidth }}>
+          <div className="p-3">
+            <Table className="min-w-[800px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Fecha</TableHead>
@@ -58,77 +74,81 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
                 <TableHead>Salida</TableHead>
                 <TableHead>Horas</TableHead>
                 <TableHead>Estado</TableHead>
-                {(showEditButton || showDeleteButton) && <TableHead>Acciones</TableHead>}
+                {(showEditButton || showDeleteButton) && <TableHead className="text-center">Acciones</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {entries && entries.length > 0 ? (
-                  entries.map((entry) => (
-                    <TableRow
-                      key={entry.id}
-                      className={
-                        format(entry.startTime, "E") === "Sat" || format(entry.startTime, "E") === "Sun"
-                          ? "bg-muted/50"
-                          : ""
-                      }
-                    >
-                      <TableCell className="font-medium">
-                        {format(entry.startTime, "EEEE dd/MM/yyyy", {locale: es })}
+              {entries.length > 0 ? (
+                entries.map((entry) => {
+                  const isWeekend = ['Sat', 'Sun'].includes(format(entry.startTime, 'E'));
+                  return (
+                    <TableRow key={entry.id} className={isWeekend ? 'bg-muted/50' : ''}>
+                      <TableCell className="font-medium whitespace-nowrap">
+                        {format(entry.startTime, 'EEEE dd/MM/yyyy', { locale: es })}
                       </TableCell>
                       {showUserColumn && (
-                        <TableCell>{entry.user.fullName}</TableCell>
+                        <TableCell className="whitespace-nowrap">{entry.user.fullName}</TableCell>
                       )}
                       {showProjectColumn && (
-                        <TableCell>
-                          {entry.project.name}
-                        </TableCell>
+                        <TableCell className="truncate max-w-xs">{entry.project.name}</TableCell>
                       )}
-                      <TableCell>{format(new Date(entry.startTime), 'dd-MM-yyyy h:mm aa') || "-"}</TableCell>
-                      <TableCell>{format(new Date(entry.endTime), 'dd-MM-yyyy h:mm aa') || "-"}</TableCell>
-                      <TableCell className="font-medium">
-                        {entry.workedHoursFormatted}
+                      <TableCell>
+                        {entry.startTime
+                          ? format(entry.startTime, 'HH:mm')
+                          : '-'}
                       </TableCell>
                       <TableCell>
-                        {getStatusBadge(entry)}
+                        {entry.endTime
+                          ? format(entry.endTime, 'HH:mm')
+                          : '-'}
                       </TableCell>
+                      <TableCell className="font-medium">
+                        {entry.workedHoursFormatted || calculateHoursWorked(entry)}
+                      </TableCell>
+                      <TableCell>{getStatusBadge(entry)}</TableCell>
                       {(showEditButton || showDeleteButton) && (
                         <TableCell>
-                          <div className="flex gap-1">
-                            {showEditButton && onEditClick && (user?.role === 'admin' || user?.role === 'pm' || user?.id === entry.user.id) && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onEditClick(entry)}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            )}
-                            {showDeleteButton && onDeleteClick && (user?.role === 'admin' || user?.role === 'pm') && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onDeleteClick(entry)}
-                                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
+                          <div className="flex justify-center gap-1">
+                            {showEditButton &&
+                              onEditClick &&
+                              (user?.role === 'admin' || user?.role === 'pm' || user?.id === entry.user.id) && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => onEditClick(entry)}
+                                  className="h-8 w-8 p-0"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              )}
+                            {showDeleteButton &&
+                              onDeleteClick &&
+                              (user?.role === 'admin' || user?.role === 'pm') && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => onDeleteClick(entry)}
+                                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
                           </div>
                         </TableCell>
                       )}
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center">
-                      No hay registros de horas para esta semana.
-                    </TableCell>
-                  </TableRow>
-                )
-              }
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columnsCount} className="text-center text-muted-foreground py-4">
+                    No hay registros de horas para esta semana.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
+          </div>
         </div>
       </CardContent>
     </Card>
