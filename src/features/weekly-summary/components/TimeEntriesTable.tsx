@@ -5,7 +5,6 @@ import { Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
-import { Badge } from '@/shared/components/ui/badge';
 import { useSidebar } from '@/shared/components/ui/sidebar';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { TimeEntry } from '@/features/time-entry/types';
@@ -44,12 +43,6 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
       ? 'calc(100vw - var(--sidebar-width) - 3rem)'
       : 'calc(100vw - var(--sidebar-width-icon) - 3rem)';
 
-  const getStatusBadge = (entry: TimeEntry) => {
-    return (!entry.startTime || !entry.endTime)
-      ? <Badge variant="destructive">Incompleto</Badge>
-      : <Badge variant="default">Completo</Badge>;
-  };
-
   const columnsCount =
     5 +
     (showUserColumn ? 1 : 0) +
@@ -73,7 +66,7 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
                 <TableHead>Entrada</TableHead>
                 <TableHead>Salida</TableHead>
                 <TableHead>Horas</TableHead>
-                <TableHead>Estado</TableHead>
+                <TableHead>Almuerzo</TableHead>
                 {(showEditButton || showDeleteButton) && <TableHead className="text-center">Acciones</TableHead>}
               </TableRow>
             </TableHeader>
@@ -105,7 +98,7 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
                       <TableCell className="font-medium">
                         {entry.workedHoursFormatted || calculateHoursWorked(entry)}
                       </TableCell>
-                      <TableCell>{getStatusBadge(entry)}</TableCell>
+                      <TableCell>{entry.lunchMinutes || 0} min</TableCell>
                       {(showEditButton || showDeleteButton) && (
                         <TableCell>
                           <div className="flex justify-center gap-1">
