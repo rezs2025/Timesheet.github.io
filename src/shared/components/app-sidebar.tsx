@@ -25,16 +25,13 @@ import {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth()
 
-  const navMain = [
+  const navAdmin = user?.role === 'admin' ? [
     {
       id: 'dashboard',
       title: "Dashboard",
       url: "/",
       icon: IconDashboard,
     },
-  ]
-
-  const navAdmin = user?.role === 'admin' ? [
     {
       id: 'projects-admin',
       title: "Proyectos",
@@ -56,6 +53,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   ] : []
 
   const navPM = user?.role === 'pm' ? [
+    {
+      id: 'dashboard',
+      title: "Dashboard",
+      url: "/",
+      icon: IconDashboard,
+    },
     {
       id: 'projects-pm',
       title: "Proyectos",
@@ -107,7 +110,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={[...navMain, ...navEmployee, ...navWeeklySummary, ...navPM, ...navAdmin]} />
+        <NavMain items={[...navEmployee, ...navWeeklySummary, ...navPM, ...navAdmin]} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={userData} />

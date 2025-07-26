@@ -73,6 +73,8 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
             <TableBody>
               {entries.length > 0 ? (
                 entries.map((entry) => {
+                  entry.startTime = new Date(entry.startTime);
+                  entry.endTime = new Date(entry.endTime);
                   const isWeekend = ['Sat', 'Sun'].includes(format(entry.startTime, 'E'));
                   return (
                     <TableRow key={entry.id} className={isWeekend ? 'bg-muted/50' : ''}>

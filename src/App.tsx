@@ -6,7 +6,7 @@ import LoginPage from '@/features/auth/pages/LoginPage';
 import RegisterPage from '@/features/auth/pages/RegisterPage';
 import { DashboardPage } from '@/features/dashboard';
 import { WeeklySummaryPage } from '@/features/weekly-summary';
-import TimeEntry from '@/features/time-entry/pages/TimeEntryPage';
+import { TimeEntryPage } from '@/features/time-entry/pages/TimeEntryPage';
 import { AppLoader } from '@/shared/components/ui/AppLoader';
 import { useAuth } from '@/shared/hooks/useAuth';
 
@@ -29,7 +29,7 @@ function App() {
       <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" />} />
       
       <Route path="/" element={user ? <MainLayout /> : <Navigate to="/login" />}>
-        <Route index element={<DashboardPage />} />
+        <Route index element={user && user.role === 'employee' ? <TimeEntryPage /> : <DashboardPage />} />
         <Route
           path="projects"
           element={
@@ -46,7 +46,7 @@ function App() {
               : <Navigate to="/" replace />
           }
         />
-        <Route path="time-entry" element={<TimeEntry />} />
+        <Route path="time-entry" element={<TimeEntryPage />} />
         <Route path="weekly-summary" element={<WeeklySummaryPage />} />
         <Route 
           path="users" 

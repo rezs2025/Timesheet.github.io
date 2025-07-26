@@ -3,7 +3,6 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { AppLoader } from '@/shared/components/ui/AppLoader';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
 
-import UserDashboard from '../components/UserDashboard';
 import AdminDashboard from '../components/AdminDashboard';
 import PMDashboard from '../components/PMDashboard';
 
@@ -29,8 +28,6 @@ const DashboardPage = () => {
       return <AdminDashboard />;
     case 'pm':
       return <PMDashboard />;
-    default:
-      return <UserDashboard />;
   }
 };
 
