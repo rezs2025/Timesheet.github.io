@@ -1,6 +1,6 @@
 // src/features/projects/services/projects.service.ts
 import { api } from '@/shared/services/api';
-import type { Project, UserProjectDetail } from '@/shared/types/project';
+import type { EmployeeActivity, Project, UserProjectDetail } from '@/shared/types/project';
 
 export interface PaginatedProjects {
   projects: Project[];
@@ -57,5 +57,12 @@ export const projectsService = {
   getProjectUsers: async (projectId: string): Promise<UserProjectDetail[]> => {
     const response = await api.get(`/projects/${projectId}/users`);
     return response.data.users;
+  },
+
+  getEmployeeActivity: async (startDate: string, endDate: string): Promise<EmployeeActivity[]> => {
+    const response = await api.get('/projects/employee-activity', {
+      params: { startDate, endDate }
+    });
+    return response.data.projects as EmployeeActivity[];
   }
 };

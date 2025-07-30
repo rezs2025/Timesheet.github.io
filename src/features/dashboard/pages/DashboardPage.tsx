@@ -2,8 +2,6 @@ import React from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { AppLoader } from '@/shared/components/ui/AppLoader';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
-
-import AdminDashboard from '../components/AdminDashboard';
 import PMDashboard from '../components/PMDashboard';
 
 const DashboardPage = () => {
@@ -25,7 +23,7 @@ const DashboardPage = () => {
 
   switch (user.role) {
     case 'admin':
-      return <AdminDashboard />;
+      return <PMDashboard />;
     case 'pm':
       return <PMDashboard />;
   }

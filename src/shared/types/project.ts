@@ -37,3 +37,8 @@ export interface LastTimesheet {
   updatedDate:  Date;
   role:         string;
 }
+
+export interface EmployeeActivity extends Partial<Project> {
+  totalEmployees: number;
+  activeEmployees: number;
+}
