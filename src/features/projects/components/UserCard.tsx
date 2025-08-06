@@ -3,19 +3,24 @@ import { Play, Square } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
+import { Checkbox } from '@/shared/components/ui/checkbox';
 
 import type { UserProjectDetail } from '@/shared/types/project';
 
 interface UserCardProps {
   userProject: UserProjectDetail;
   isLoading: boolean;
+  isSelected: boolean;
   onToggleWork: (userProject: UserProjectDetail) => void;
+  onSelectionChange: (userId: string, selected: boolean) => void;
 }
 
 export const UserCard: React.FC<UserCardProps> = ({
   userProject,
   isLoading,
-  onToggleWork
+  isSelected,
+  onToggleWork,
+  onSelectionChange
 }) => {
   const getUserInitials = (fullName: string): string => {
     return fullName
@@ -34,6 +39,10 @@ export const UserCard: React.FC<UserCardProps> = ({
     <div className="p-4 rounded-lg border">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3 sm:gap-4">
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) => onSelectionChange(userProject.id, !!checked)}
+          />
           <Avatar className="h-10 w-10">
             <AvatarFallback>
               {getUserInitials(userProject.fullName)}
