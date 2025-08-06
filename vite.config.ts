@@ -14,6 +14,22 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
         cleanupOutdatedCaches: true,
+        runtimeCaching: [
+          {
+            urlPattern: /^https?.*/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'offlineCache',
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 86400,
+              },
+            },
+          },
+        ],
+      },
+      devOptions: {
+        enabled: true,
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
