@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Users } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -9,6 +9,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { timeEntryService } from '@/features/time-entry/services/timeEntry.service';
 import { projectsService } from '../services/project.service';
 import { UserCard } from './UserCard';
+import { useAuth } from '@/shared/hooks/useAuth';
 import type { UserProjectDetail, Project } from '@/shared/types/project';
 
 interface AssignedUsersCardProps {
@@ -24,7 +25,13 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
   loading,
   onUsersUpdated
 }) => {
+  const { user: currentUser } = useAuth();
   const [actionLoading, setActionLoading] = useState<{[userId: string]: boolean}>({});
+  
+  const filteredUsers = useMemo(() => {
+    if (!currentUser) return users;
+    return users.filter(user => user.id !== currentUser.id);
+  }, [users, currentUser]);
 
 
   const handleToggleUserWork = async (userProject: UserProjectDetail) => {
@@ -77,7 +84,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
           <Users className="h-5 w-5" />
           Usuarios Asignados
           <Badge variant="outline" className="ml-auto">
-            {users.length}
+            {filteredUsers.length}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -94,7 +101,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
               </div>
             ))}
           </div>
-        ) : users.length === 0 ? (
+        ) : filteredUsers.length === 0 ? (
           <div className="text-center py-8">
             <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-sm text-muted-foreground">
@@ -102,8 +109,8 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
-            {users.map((userProject) => {
+          <div className="space-y-4">
+            {filteredUsers.map((userProject) => {
               const isLoading = actionLoading[userProject.id] || false;
               return (
                 <UserCard
