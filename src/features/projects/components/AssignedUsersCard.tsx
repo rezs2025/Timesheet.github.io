@@ -109,11 +109,24 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
   const handleBulkAction = async (action: 'start' | 'stop') => {
     if (selectedUserObjects.length === 0) return;
     
+    // Filter users based on their current state
+    const eligibleUsers = selectedUserObjects.filter(userProject => {
+      const isCurrentlyWorking = userProject.lastTimesheet && !userProject.lastTimesheet.endTime;
+      return action === 'start' ? !isCurrentlyWorking : isCurrentlyWorking;
+    });
+    
+    if (eligibleUsers.length === 0) {
+      toast.info('Sin cambios necesarios', {
+        description: `Todos los usuarios seleccionados ya ${action === 'start' ? 'tienen trabajo iniciado' : 'han finalizado su trabajo'}`,
+      });
+      return;
+    }
+    
     setBulkActionLoading(true);
     const errors: string[] = [];
     
     try {
-      const promises = selectedUserObjects.map(async (userProject) => {
+      const promises = eligibleUsers.map(async (userProject) => {
         try {
           const isCurrentlyWorking = userProject.lastTimesheet && !userProject.lastTimesheet.endTime;
           
@@ -140,9 +153,16 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
       const updatedUsersData = await projectsService.getProjectUsers(project.id);
       onUsersUpdated(updatedUsersData || []);
       
+      const skippedCount = selectedUserObjects.length - eligibleUsers.length;
+      
       if (errors.length === 0) {
+        let description = `Se ${action === 'start' ? 'inició' : 'detuvo'} el trabajo para ${eligibleUsers.length} usuario(s)`;
+        if (skippedCount > 0) {
+          description += `. Se omitieron ${skippedCount} usuario(s) que ya ${action === 'start' ? 'tenían trabajo iniciado' : 'habían finalizado su trabajo'}`;
+        }
+        
         toast.success(`Acción masiva completada`, {
-          description: `Se ${action === 'start' ? 'inició' : 'detuvo'} el trabajo para ${selectedUserObjects.length} usuario(s)`,
+          description,
         });
         setSelectedUsers(new Set()); // Clear selection after successful action
       } else {
