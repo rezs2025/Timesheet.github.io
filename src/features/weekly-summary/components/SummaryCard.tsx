@@ -24,7 +24,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          Resumen Total
+          Total Summary
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -32,7 +32,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Horas Trabajadas</span>
+              <span className="text-sm font-medium">Hours Worked</span>
             </div>
             <div className="text-2xl font-bold">{weekSummary?.formattedTotal || '0:00'}</div>
           </div>
@@ -40,7 +40,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Días Registrados</span>
+              <span className="text-sm font-medium">Days Recorded</span>
             </div>
             <div className="text-2xl font-bold">{daysWorked}</div>
           </div>
@@ -49,7 +49,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Building className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Proyectos</span>
+                <span className="text-sm font-medium">Projects</span>
               </div>
               <div className="text-2xl font-bold">{uniqueProjects}</div>
             </div>
@@ -59,7 +59,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Empleados</span>
+                <span className="text-sm font-medium">Employees</span>
               </div>
               <div className="text-2xl font-bold">{uniqueEmployees}</div>
             </div>

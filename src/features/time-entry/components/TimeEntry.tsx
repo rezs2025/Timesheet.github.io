@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format, differenceInMinutes } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { Clock, MapPin, AlertTriangle, RotateCcw, Play, Square, Calendar, TrendingUp, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -82,8 +82,8 @@ export const TimeEntry: React.FC = () => {
           setIsWorking(true);
         }
       } catch (error) {
-        toast.error('Error al cargar datos', {
-          description: 'No se pudieron cargar las horas del día',
+        toast.error('Error loading data', {
+          description: 'Could not load today\'s hours',
           duration: 4000,
         });
       } finally {
@@ -117,7 +117,7 @@ export const TimeEntry: React.FC = () => {
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            No estás asignado a ningún proyecto. Contacta a tu administrador para que te asigne uno.
+            You are not assigned to any project. Contact your administrator to assign one.
           </AlertDescription>
         </Alert>
       </div>
@@ -127,9 +127,9 @@ export const TimeEntry: React.FC = () => {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Registro de Tiempo</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Time Entry</h1>
         <p className="text-muted-foreground">
-          Registra tu hora de entrada y salida del proyecto
+          Record your project clock in and clock out time
         </p>
       </div>
 
@@ -137,7 +137,7 @@ export const TimeEntry: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            {format(date, "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}
+            {format(date, "EEEE, MMMM d, yyyy", { locale: enUS })}
           </CardTitle>
           <CardDescription
             className={clsx(projects.length > 1 && "my-1")}
@@ -145,7 +145,7 @@ export const TimeEntry: React.FC = () => {
             {currentEntry
               ? `Proyecto: ${currentEntry.project.name}`
               : projects.length > 1
-                ? 'Seleccione Proyecto'
+                ? 'Select Project'
                 : selectedProject
                   ? `Proyecto: ${selectedProject.project.name}`
                   : ''}
@@ -173,13 +173,13 @@ export const TimeEntry: React.FC = () => {
           {/* Location Status */}
           {locationStatus !== 'success' && (
           <div className="space-y-2">
-            <Label>Estado de Ubicación</Label>
+            <Label>Location Status</Label>
             {locationStatus === 'loading' && (
               <div className="flex items-center gap-2 p-3 border rounded-lg">
                 <div className="animate-spin">
                   <RotateCcw className="h-4 w-4" />
                 </div>
-                <span className="text-sm">Obteniendo ubicación...</span>
+                <span className="text-sm">Getting location...</span>
               </div>
             )}
             {locationStatus === 'error' && (
@@ -188,10 +188,10 @@ export const TimeEntry: React.FC = () => {
                   <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
                   <div className="space-y-1">
                     <p className="text-sm font-medium text-destructive">
-                      Error al obtener ubicación
+                      Error getting location
                     </p>
                     <p className="text-sm text-destructive/80">
-                      {geolocationError || 'No se pudo obtener tu ubicación actual'}
+                      {geolocationError || 'Could not get your current location'}
                     </p>
                   </div>
                 </div>
@@ -203,7 +203,7 @@ export const TimeEntry: React.FC = () => {
                     className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
                   >
                     <RotateCcw className="h-4 w-4 mr-2" />
-                    Reintentar Ubicación
+                    Retry Location
                   </Button>
                 </div>
               </div>
@@ -220,7 +220,7 @@ export const TimeEntry: React.FC = () => {
                 className="w-full sm:w-auto"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Actualizar Ubicación
+                Update Location
               </Button>
             </div>
           )}
@@ -228,7 +228,7 @@ export const TimeEntry: React.FC = () => {
           {isWorking && (
             <div className="flex items-center gap-2 text-lg">
               <Play className="h-5 w-5 animate-pulse" />
-              <span>Tiempo trabajado: {elapsed}</span>
+              <span>Time worked: {elapsed}</span>
             </div>
           )}
 
@@ -241,7 +241,7 @@ export const TimeEntry: React.FC = () => {
                 onClick={handleStartWork}
               >
                 <Play className="h-4 w-4 mr-2" />
-                Iniciar Trabajo
+                Clock In
               </Button>
             )}
             
@@ -254,7 +254,7 @@ export const TimeEntry: React.FC = () => {
                   onClick={handleStopWork}
                 >
                   <Square className="h-4 w-4 mr-2" />
-                  Detener Trabajo
+                  Clock Out
                 </Button>
               </>
             )}
@@ -266,7 +266,7 @@ export const TimeEntry: React.FC = () => {
               <Separator />
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                <h3 className="text-lg font-semibold">Entradas de Hoy</h3>
+                <h3 className="text-lg font-semibold">Today's Entries</h3>
               </div>
               <div className="space-y-2">
                 {todayEntries.map((entry) => (
@@ -276,11 +276,11 @@ export const TimeEntry: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm font-mono">
-                            {format(new Date(entry.startTime), 'HH:mm')} - {entry.endTime ? format(new Date(entry.endTime), 'HH:mm') : 'Activo'}
+                            {format(new Date(entry.startTime), 'HH:mm')} - {entry.endTime ? format(new Date(entry.endTime), 'HH:mm') : 'Active'}
                           </span>
                         </div>
                         <Badge variant={entry.endTime ? 'secondary' : 'default'}>
-                          {entry.endTime ? 'Completado' : 'En progreso'}
+                          {entry.endTime ? 'Completed' : 'In progress'}
                         </Badge>
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -335,10 +335,10 @@ export const TimeEntry: React.FC = () => {
     
     if (distance > 100) {
       const formattedDistance = formatDistance(distance);
-      const errorMessage = `Estás a ${formattedDistance} del proyecto. Debes estar a menos de 100m para registrar tu entrada.`;
+      const errorMessage = `You are ${formattedDistance} from the project. You must be within 100m to record your entry.`;
       setLocationError(errorMessage);
       setShowLocationUpdate(true);
-      toast.error('Ubicación muy lejana', {
+      toast.error('Location too far', {
         description: errorMessage,
         duration: 5000,
       });
@@ -384,9 +384,9 @@ export const TimeEntry: React.FC = () => {
     const currentDuration = differenceInMinutes(new Date(), new Date(entry.startTime));
     
     if (currentDuration < 60) {
-      return `${currentDuration}m (trabajando)`;
+      return `${currentDuration}m (working)`;
     } else {
-      return `${formatDuration(currentDuration)} (trabajando)`;
+      return `${formatDuration(currentDuration)} (working)`;
     }
   }
 
@@ -411,8 +411,8 @@ export const TimeEntry: React.FC = () => {
       
       setCurrentEntry(newEntry);
       setIsWorking(true);
-      toast.success('Trabajo iniciado', {
-        description: 'Tu jornada laboral ha comenzado exitosamente',
+      toast.success('Clocked in', {
+        description: 'Your workday has started successfully',
       });
       
       // Refresh today's entries
@@ -425,8 +425,8 @@ export const TimeEntry: React.FC = () => {
       });
       setTodayEntries(entries);
     } catch (error) {
-      toast.error('Error al iniciar trabajo', {
-        description: 'No se pudo registrar el inicio de tu jornada. Intenta de nuevo.',
+      toast.error('Error clocking in', {
+        description: 'Could not record the start of your workday. Try again.',
         duration: 5000,
       });
     } finally {
@@ -452,8 +452,8 @@ export const TimeEntry: React.FC = () => {
       
       setIsWorking(false);
       setCurrentEntry(null);
-      toast.success('Trabajo finalizado', {
-        description: 'Tu jornada laboral ha sido registrada exitosamente',
+      toast.success('Clocked out', {
+        description: 'Your workday has been recorded successfully',
       });
       
       // Refresh today's entries
@@ -466,8 +466,8 @@ export const TimeEntry: React.FC = () => {
       });
       setTodayEntries(entries);
     } catch (error) {
-      toast.error('Error al finalizar trabajo', {
-        description: 'No se pudo registrar el final de tu jornada. Intenta de nuevo.',
+      toast.error('Error clocking out', {
+        description: 'Could not record the end of your workday. Try again.',
         duration: 5000,
       });
     } finally {

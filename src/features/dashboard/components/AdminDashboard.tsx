@@ -320,7 +320,7 @@ const AdminDashboard = () => {
                 onClick={() => navigate('/activity-log')}
                 className="w-full"
               >
-                Ver Registro Completo
+                View Complete Log
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>

@@ -61,9 +61,9 @@ const EmployeeWeeklySummary = () => {
         setLoading(true);
         setIsInitialized(true);
       } catch (error) {
-        console.error("Error al cargar datos iniciales:", error);
+        console.error("Error loading initial data:", error);
         setError(
-          "Error al cargar los datos iniciales. Por favor, intente nuevamente."
+          "Error loading initial data. Please try again."
         );
       } finally {
         setLoading(false);
@@ -111,8 +111,8 @@ const EmployeeWeeklySummary = () => {
         );
       } catch (error) {
         console.error(error);
-        toast.error("Error al cargar datos", {
-          description: "No se pudieron cargar las horas del día",
+        toast.error("Error loading data", {
+          description: "Could not load today's hours",
           duration: 4000,
         });
       } finally {
@@ -222,7 +222,7 @@ const EmployeeWeeklySummary = () => {
   };
 
   if (loadingUser || loading || !isInitialized) {
-    return <AppLoader text="Cargando resumen semanal..." />;
+    return <AppLoader text="Loading weekly summary..." />;
   }
 
   if (error) {
@@ -240,8 +240,8 @@ const EmployeeWeeklySummary = () => {
       <div className="p-6">
         <Alert>
           <AlertDescription>
-            No estás asignado a ningún proyecto. Contacta a tu administrador
-            para que te asigne uno.
+            You are not assigned to any project. Contact your administrator
+            to assign one.
           </AlertDescription>
         </Alert>
       </div>
@@ -252,10 +252,10 @@ const EmployeeWeeklySummary = () => {
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Mi Resumen Semanal
+          My Weekly Summary
         </h1>
         <p className="text-muted-foreground">
-          Registro de horas trabajadas - {user?.fullName || user?.email}
+          Worked hours log - {user?.fullName || user?.email}
         </p>
       </div>
 

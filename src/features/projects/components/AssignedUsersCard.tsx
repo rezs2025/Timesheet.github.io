@@ -64,7 +64,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
           lunchMinutes: project.lunchMinutes
         });
         
-        toast.success('Work started', {
+        toast.success('Clocked in', {
           description: `${userProject.fullName} has started working on the project`,
         });
       }

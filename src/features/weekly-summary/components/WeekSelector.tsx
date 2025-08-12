@@ -1,6 +1,6 @@
 import React from 'react';
 import { endOfWeek, format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -23,10 +23,10 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <CardTitle className="text-lg">
-            Semana del {format(currentWeekStart, "dd/MM/yyyy", { locale: es })} al {format(endOfWeek(currentWeekStart, { weekStartsOn: 1 }), "dd/MM/yyyy", { locale: es })}
+            Week of {format(currentWeekStart, "MM/dd/yyyy", { locale: enUS })} to {format(endOfWeek(currentWeekStart, { weekStartsOn: 1 }), "MM/dd/yyyy", { locale: enUS })}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            {format(currentWeekStart, "MMMM yyyy", { locale: es })}
+            {format(currentWeekStart, "MMMM yyyy", { locale: enUS })}
           </p>
         </div>
         <div className="flex items-center gap-2">
