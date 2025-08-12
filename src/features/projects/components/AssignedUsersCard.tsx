@@ -32,17 +32,12 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
   
-  const filteredUsers = useMemo(() => {
-    if (!currentUser) return users;
-    return users.filter(user => user.id !== currentUser.id);
-  }, [users, currentUser]);
-  
-  const allSelected = selectedUsers.size === filteredUsers.length && filteredUsers.length > 0;
+  const allSelected = selectedUsers.size === users.length && users.length > 0;
   const someSelected = selectedUsers.size > 0;
   
   const selectedUserObjects = useMemo(() => {
-    return filteredUsers.filter(user => selectedUsers.has(user.id));
-  }, [filteredUsers, selectedUsers]);
+    return users.filter(user => selectedUsers.has(user.id));
+  }, [users, selectedUsers]);
 
 
   const handleToggleUserWork = async (userProject: UserProjectDetail) => {
@@ -90,7 +85,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
   
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedUsers(new Set(filteredUsers.map(user => user.id)));
+      setSelectedUsers(new Set(users.map(user => user.id)));
     } else {
       setSelectedUsers(new Set());
     }
@@ -189,10 +184,10 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
           <Users className="h-5 w-5" />
           Usuarios Asignados
           <Badge variant="outline" className="ml-auto">
-            {filteredUsers.length}
+            {users.length}
           </Badge>
         </CardTitle>
-        {filteredUsers.length > 0 && (
+        {users.length > 0 && (
           <div className="space-y-3 pt-2">
             <div className="flex items-center gap-2">
               <Checkbox
@@ -201,7 +196,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
                 className="data-[state=checked]:bg-primary"
               />
               <span className="text-sm text-muted-foreground">
-                Seleccionar todos ({selectedUsers.size}/{filteredUsers.length})
+                Seleccionar todos ({selectedUsers.size}/{users.length})
               </span>
             </div>
             {someSelected && (
@@ -252,7 +247,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
               </div>
             ))}
           </div>
-        ) : filteredUsers.length === 0 ? (
+        ) : users.length === 0 ? (
           <div className="text-center py-8">
             <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-sm text-muted-foreground">
@@ -261,7 +256,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredUsers.map((userProject) => {
+            {users.map((userProject) => {
               const isLoading = actionLoading[userProject.id] || false;
               return (
                 <UserCard

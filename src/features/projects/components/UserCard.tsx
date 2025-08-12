@@ -1,9 +1,10 @@
 import React from 'react';
-import { Play, Square } from 'lucide-react';
+import { Play, Square, UserCheck } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import { Checkbox } from '@/shared/components/ui/checkbox';
+import { Badge } from '@/shared/components/ui/badge';
 
 import type { UserProjectDetail } from '@/shared/types/project';
 
@@ -55,6 +56,14 @@ export const UserCard: React.FC<UserCardProps> = ({
             <p className="text-xs text-muted-foreground truncate">
               {userProject.email}
             </p>
+            {userProject.assignmentType === 'pm' && (
+              <div className="mt-1">
+                <Badge variant="secondary" className="text-xs h-4 px-1.5">
+                  <UserCheck className="h-3 w-3 mr-1" />
+                  PM
+                </Badge>
+              </div>
+            )}
           </div>
         </div>
         
