@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { startOfWeek, addWeeks, subWeeks } from 'date-fns';
+import { startOfWeek, addWeeks, subWeeks, endOfWeek, format } from 'date-fns';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { AppLoader } from '@/shared/components/ui/AppLoader';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
@@ -148,7 +148,6 @@ const ManagerWeeklySummary = () => {
         <FiltersPanel
           loadingUser={loadingUser}
           loading={loading}
-          onExport={() => {/* TODO: Implement export */}}
           user={user}
           projects={projects}
           users={users}
@@ -162,7 +161,7 @@ const ManagerWeeklySummary = () => {
       </Card>
 
       {/* Team Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium">
@@ -201,18 +200,6 @@ const ManagerWeeklySummary = () => {
             <div className="text-2xl font-bold">{weekSummary.totalHours}</div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-medium">
-              <Clock className="h-4 w-4 text-blue-600" />
-              {user?.role === 'admin' ? 'Promedio/Usuario' : 'Promedio/Persona'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{weekSummary.averageHoursPerPerson}</div>
-          </CardContent>
-        </Card>
       </div>
 
       <TimeEntriesTable
@@ -227,6 +214,8 @@ const ManagerWeeklySummary = () => {
         }}
         onDeleteClick={handleDeleteClick}
         showDeleteButton={true}
+        showExportButton={true}
+        exportFileName={`resumen-semanal-${format(currentWeekStart, 'dd-MM-yyyy')}_${format(endOfWeek(currentWeekStart, { weekStartsOn: 1 }), 'dd-MM-yyyy')}`}
       />
 
       <EditEntryDialog

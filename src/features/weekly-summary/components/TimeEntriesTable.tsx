@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Download } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table';
@@ -9,6 +9,7 @@ import { useSidebar } from '@/shared/components/ui/sidebar';
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { TimeEntry } from '@/features/time-entry/types';
 import { User } from '@/shared/types/user';
+import { exportToExcel } from '@/shared/utils/excelExport';
 
 interface TimeEntriesTableProps {
   entries?: TimeEntry[];
@@ -20,6 +21,8 @@ interface TimeEntriesTableProps {
   showProjectColumn?: boolean;
   showEditButton?: boolean;
   showDeleteButton?: boolean;
+  showExportButton?: boolean;
+  exportFileName?: string;
 }
 
 const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
@@ -32,6 +35,8 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
   showProjectColumn = true,
   showEditButton = true,
   showDeleteButton = false,
+  showExportButton = true,
+  exportFileName = 'registro-horas',
 }) => {
   const { state } = useSidebar();
   const isMobile = useIsMobile();
@@ -49,10 +54,37 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
     (showProjectColumn ? 1 : 0) +
     (showEditButton || showDeleteButton ? 1 : 0);
 
+  const handleExportToExcel = () => {
+    if (entries.length === 0) {
+      return;
+    }
+
+    exportToExcel({
+      entries,
+      calculateHoursWorked,
+      filename: exportFileName,
+      includeUserColumn: showUserColumn,
+      includeProjectColumn: showProjectColumn,
+    });
+  };
+
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle>Registro de Horas</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Registro de Horas</CardTitle>
+          {showExportButton && entries.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportToExcel}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              {!isMobile && 'Exportar Excel'}
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto" style={{ width: availableWidth }}>
@@ -79,7 +111,7 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
                   return (
                     <TableRow key={entry.id} className={isWeekend ? 'bg-muted/50' : ''}>
                       <TableCell className="font-medium whitespace-nowrap">
-                        {format(entry.startTime, 'EEEE dd/MM/yyyy', { locale: es })}
+                        {format(entry.startTime, 'dd/MM/yyyy', { locale: es })}
                       </TableCell>
                       {showUserColumn && (
                         <TableCell className="whitespace-nowrap">{entry.user.fullName}</TableCell>

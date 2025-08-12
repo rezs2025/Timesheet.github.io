@@ -1,7 +1,5 @@
 import React from 'react';
-import { Download } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
+import { CardContent } from '@/shared/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Label } from '@/shared/components/ui/label';
 import { UserSearch } from '@/features/users/components/UserSearch';
@@ -9,7 +7,6 @@ import { UserSearch } from '@/features/users/components/UserSearch';
 interface FiltersPanelProps {
   loadingUser: boolean;
   loading: boolean;
-  onExport: () => void;
   user: any;
   projects: any[];
   users: any[];
@@ -22,12 +19,9 @@ interface FiltersPanelProps {
 }
 
 const FiltersPanel: React.FC<FiltersPanelProps> = ({
-  loadingUser,
   loading,
-  onExport,
   user,
   projects,
-  users,
   selectedProject,
   selectedUser,
   onProjectChange,
@@ -71,15 +65,6 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
             </div>
           )}
         </div>
-
-        <Button
-          onClick={onExport}
-          disabled={loadingUser || loading}
-          className="flex items-center gap-2"
-        >
-          <Download className="h-4 w-4" />
-          Exportar Excel
-        </Button>
       </div>
     </CardContent>
   );
