@@ -15,6 +15,7 @@ import { ProjectDetailPage } from '@/features/projects/pages/ProjectDetailPage';
 import { UsersAdminPage } from '@/features/users/pages/UsersAdminPage';
 import { UserProjectsPage } from '@/features/users/pages/UserProjectsPage';
 import { MainLayout } from './layouts/main-layout';
+import { ROUTES } from '@/shared/constants/routes';
 
 function App() {
   const { loading, user } = useAuth();
@@ -25,17 +26,17 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
-      <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/" />} />
+      <Route path={ROUTES.LOGIN.path} element={!user ? <LoginPage /> : <Navigate to={ROUTES.DASHBOARD.path} />} />
+      <Route path={ROUTES.REGISTER.path} element={!user ? <RegisterPage /> : <Navigate to={ROUTES.DASHBOARD.path} />} />
       
-      <Route path="/" element={user ? <MainLayout /> : <Navigate to="/login" />}>
+      <Route path={ROUTES.DASHBOARD.path} element={user ? <MainLayout /> : <Navigate to={ROUTES.LOGIN.path} />}>
         <Route index element={user && user.role === 'employee' ? <TimeEntryPage /> : <DashboardPage />} />
         <Route
           path="projects"
           element={
             ['admin', 'pm'].includes(user?.role ?? '')
               ? <ProjectsAdminPage />
-              : <Navigate to="/" replace />
+              : <Navigate to={ROUTES.DASHBOARD.path} replace />
           }
         />
         <Route
@@ -43,7 +44,7 @@ function App() {
           element={
             ['admin', 'pm'].includes(user?.role ?? '')
               ? <ProjectDetailPage />
-              : <Navigate to="/" replace />
+              : <Navigate to={ROUTES.DASHBOARD.path} replace />
           }
         />
         <Route path="time-entry" element={<TimeEntryPage />} />
@@ -53,7 +54,7 @@ function App() {
           element={
             user?.role === 'admin'
               ? <UsersAdminPage />
-              : <Navigate to="/" replace />
+              : <Navigate to={ROUTES.DASHBOARD.path} replace />
           }
         />
         <Route 
@@ -61,7 +62,7 @@ function App() {
           element={
             user?.role === 'admin'
               ? <UserProjectsPage />
-              : <Navigate to="/" replace />
+              : <Navigate to={ROUTES.DASHBOARD.path} replace />
           }
         />
       </Route>
