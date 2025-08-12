@@ -29,7 +29,7 @@ export const UserProjectAssignment: React.FC<UserProjectAssignmentProps> = ({
     projectId: '',
   });
 
-  // Cargar proyectos del usuario y proyectos disponibles
+  // Load user projects and available projects
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,7 +42,7 @@ export const UserProjectAssignment: React.FC<UserProjectAssignmentProps> = ({
         setUserProjects(userProjectsData);
         setAllProjects(allProjects.projects);
       } catch (err: any) {
-        setError(err.response?.data?.message ?? 'Error al cargar datos');
+        setError(err.response?.data?.message ?? 'Error loading data');
       } finally {
         setLoading(false);
       }
@@ -69,7 +69,7 @@ export const UserProjectAssignment: React.FC<UserProjectAssignmentProps> = ({
       setNewAssignment({ projectId: '' });
       setError(null);
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Error al asignar proyecto');
+      setError(err.response?.data?.message ?? 'Error assigning project');
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ export const UserProjectAssignment: React.FC<UserProjectAssignmentProps> = ({
       setUserProjects(prev => prev.filter(up => up.id !== userProjectId));
       setError(null);
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Error al remover asignación');
+      setError(err.response?.data?.message ?? 'Error removing assignment');
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export const UserProjectAssignment: React.FC<UserProjectAssignmentProps> = ({
       case 'pm':
         return { label: 'Project Manager', variant: 'secondary' as const, icon: UserCheck };
       case 'employee':
-        return { label: 'Empleado', variant: 'default' as const, icon: Users };
+        return { label: 'Employee', variant: 'default' as const, icon: Users };
       default:
         return { label: type, variant: 'default' as const, icon: Users };
     }
@@ -117,14 +117,14 @@ export const UserProjectAssignment: React.FC<UserProjectAssignmentProps> = ({
         </div>
       )}
 
-      {/* Proyectos asignados */}
+      {/* Assigned projects */
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Proyectos Asignados</CardTitle>
+          <CardTitle className="text-base">Assigned Projects</CardTitle>
         </CardHeader>
         <CardContent>
           {userProjects.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No hay proyectos asignados</p>
+            <p className="text-sm text-muted-foreground">No assigned projects</p>
           ) : (
             <div className="space-y-3">
               {userProjects.map((userProject) => {
@@ -166,19 +166,19 @@ export const UserProjectAssignment: React.FC<UserProjectAssignmentProps> = ({
         </CardContent>
       </Card>
 
-      {/* Agregar nueva asignación */}
+      {/* Add new assignment */
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Agregar Proyecto</CardTitle>
+          <CardTitle className="text-base">Add Project</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 sm:space-y-4">
           <div className="space-y-3 sm:space-y-4">
             <div className="space-y-2">
-              <Label className="text-sm">Proyecto</Label>
+              <Label className="text-sm">Project</Label>
               <ProjectSearch
                 value={newAssignment.projectId}
                 onValueChange={(value) => setNewAssignment(prev => ({ ...prev, projectId: value }))}
-                placeholder="Buscar y seleccionar proyecto..."
+                placeholder="Search and select project..."
                 disabled={loading}
                 excludeProjectIds={userProjects.map(up => up.project.id)}
               />
@@ -191,7 +191,7 @@ export const UserProjectAssignment: React.FC<UserProjectAssignmentProps> = ({
             className="w-full"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Agregar Asignación
+            Add Assignment
           </Button>
 
         </CardContent>
@@ -199,7 +199,7 @@ export const UserProjectAssignment: React.FC<UserProjectAssignmentProps> = ({
 
       <div className="flex justify-end">
         <Button onClick={onClose} variant="outline">
-          Cerrar
+          Close
         </Button>
       </div>
     </div>

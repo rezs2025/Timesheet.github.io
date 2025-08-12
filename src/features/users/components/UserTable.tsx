@@ -29,11 +29,11 @@ interface Props {
 const getRoleConfig = (role: User['role']) => {
   switch (role) {
     case 'admin':
-      return { label: 'Administrador', variant: 'destructive' as const, icon: Shield };
+      return { label: 'Administrator', variant: 'destructive' as const, icon: Shield };
     case 'pm':
       return { label: 'Project Manager', variant: 'secondary' as const, icon: UserCheck };
     case 'employee':
-      return { label: 'Empleado', variant: 'default' as const, icon: Users };
+      return { label: 'Employee', variant: 'default' as const, icon: Users };
     default:
       return { label: role, variant: 'default' as const, icon: Users };
   }
@@ -99,7 +99,7 @@ export const UserTable: React.FC<Props> = ({
                     className="h-8 w-8 p-0"
                   >
                     <Edit className="h-4 w-4" />
-                    <span className="sr-only">Editar usuario</span>
+                    <span className="sr-only">Edit user</span>
                   </Button>
                   <Button
                     variant="ghost"
@@ -108,7 +108,7 @@ export const UserTable: React.FC<Props> = ({
                     className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Eliminar usuario</span>
+                    <span className="sr-only">Delete user</span>
                   </Button>
                 </div>
               </CardTitle>
@@ -119,7 +119,7 @@ export const UserTable: React.FC<Props> = ({
                   <span className="font-medium">Email:</span> {user.email}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">Rol:</span>
+                  <span className="font-medium">Role:</span>
                   <Badge variant={roleConfig.variant}>
                     {roleConfig.label}
                   </Badge>
@@ -150,10 +150,10 @@ export const UserTable: React.FC<Props> = ({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Usuario</TableHead>
+              <TableHead>User</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Rol</TableHead>
-              <TableHead className="text-center">Acciones</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead className="text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -196,7 +196,7 @@ export const UserTable: React.FC<Props> = ({
                         onClick={() => onEdit(user.id)}
                       >
                         <Edit className="h-4 w-4" />
-                        <span className="sr-only">Editar usuario</span>
+                        <span className="sr-only">Edit user</span>
                       </Button>
                       <Button
                         variant="ghost"
@@ -205,7 +205,7 @@ export const UserTable: React.FC<Props> = ({
                         className="text-destructive hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Eliminar usuario</span>
+                        <span className="sr-only">Delete user</span>
                       </Button>
                     </div>
                   </TableCell>

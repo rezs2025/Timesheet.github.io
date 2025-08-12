@@ -35,13 +35,13 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
           {showProjectFilter && (user?.role === 'admin' || user?.role === 'pm') && (
             <div className="space-y-2">
-              <Label htmlFor="project-select">Proyecto</Label>
+              <Label htmlFor="project-select">Project</Label>
               <Select value={selectedProject} onValueChange={onProjectChange}>
                 <SelectTrigger id="project-select">
-                  <SelectValue placeholder="Todos los proyectos" />
+                  <SelectValue placeholder="All projects" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los proyectos</SelectItem>
+                  <SelectItem value="all">All projects</SelectItem>
                   {projects.map((project) => (
                     <SelectItem key={project.id} value={project.id}>
                       {project.name}
@@ -54,11 +54,11 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
 
           {showUserFilter && user?.role === 'admin' && (
             <div className="space-y-2">
-              <Label htmlFor="user-select">Empleado</Label>
+              <Label htmlFor="user-select">Employee</Label>
               <UserSearch
                 value={selectedUser}
                 onValueChange={(value) => onUserChange(value)}
-                placeholder="Buscar y seleccionar empleado..."
+                placeholder="Search and select employee..."
                 disabled={loading}
                 roleFilter='employee'
               />

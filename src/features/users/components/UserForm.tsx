@@ -47,7 +47,7 @@ export const UserForm: React.FC<UserFormProps> = ({
             role: user.role,
           });
         } catch (err: any) {
-          setError(err.response?.data?.message ?? 'Error al cargar usuario');
+          setError(err.response?.data?.message ?? 'Error loading user');
         } finally {
           setLoading(false);
         }
@@ -73,7 +73,7 @@ export const UserForm: React.FC<UserFormProps> = ({
 
       onSaved();
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Error al guardar usuario');
+      setError(err.response?.data?.message ?? 'Error saving user');
     } finally {
       setLoading(false);
     }
@@ -95,12 +95,12 @@ export const UserForm: React.FC<UserFormProps> = ({
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="fullName">Nombre Completo</Label>
+        <Label htmlFor="fullName">Full Name</Label>
         <Input
           id="fullName"
           value={formData.fullName}
           onChange={(e) => handleChange('fullName', e.target.value)}
-          placeholder="Ingrese el nombre completo"
+          placeholder="Enter full name"
           required
         />
       </div>
@@ -112,7 +112,7 @@ export const UserForm: React.FC<UserFormProps> = ({
           type="email"
           value={formData.email}
           onChange={(e) => handleChange('email', e.target.value)}
-          placeholder="ejemplo@correo.com"
+          placeholder="example@email.com"
           required
         />
       </div>
@@ -130,25 +130,25 @@ export const UserForm: React.FC<UserFormProps> = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="role">Rol</Label>
+        <Label htmlFor="role">Role</Label>
         <Select value={formData.role} onValueChange={(value) => handleChange('role', value)}>
           <SelectTrigger>
-            <SelectValue placeholder="Seleccione un rol" />
+            <SelectValue placeholder="Select a role" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="employee">Empleado</SelectItem>
+            <SelectItem value="employee">Employee</SelectItem>
             <SelectItem value="pm">Project Manager</SelectItem>
-            <SelectItem value="admin">Administrador</SelectItem>
+            <SelectItem value="admin">Administrator</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="flex justify-end space-x-2 pt-4">
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancelar
+          Cancel
         </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? 'Guardando...' : userId ? 'Actualizar' : 'Crear'}
+          {loading ? 'Saving...' : userId ? 'Update' : 'Create'}
         </Button>
       </div>
     </form>

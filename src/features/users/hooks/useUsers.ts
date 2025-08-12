@@ -17,9 +17,9 @@ interface UseUsersResult {
 }
 
 /**
- * Hook para obtener la lista de usuarios con paginación.
- * @param initialPage página inicial (por defecto 1)
- * @param pageSize cantidad de ítems por página (por defecto 10)
+ * Hook to get the users list with pagination.
+ * @param initialPage initial page (default 1)
+ * @param pageSize number of items per page (default 10)
  */
 export function useUsers(
   initialPage = 1,
@@ -45,7 +45,7 @@ export function useUsers(
         setTotalCount(totalCount);
         setTotalPages(totalPages);
       } catch (err: any) {
-        setError(err.response?.data?.message ?? "Error al cargar usuarios");
+        setError(err.response?.data?.message ?? "Error loading users");
       } finally {
         setLoading(false);
       }
@@ -64,7 +64,7 @@ export function useUsers(
       setTotalCount(totalCount);
       setTotalPages(totalPages);
     } catch (err: any) {
-      setError(err.response?.data?.message ?? "Error al cargar usuarios");
+      setError(err.response?.data?.message ?? "Error loading users");
     } finally {
       setLoading(false);
     }

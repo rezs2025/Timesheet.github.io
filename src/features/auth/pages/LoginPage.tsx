@@ -35,9 +35,9 @@ export function LoginPage({
                 <div className="bg-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mb-4">
                   <img src={logo} alt="Logo" className="w-14 h-14" />
                 </div>
-                <h1 className="text-2xl font-bold">Bienvenido de vuelta</h1>
+                <h1 className="text-2xl font-bold">Welcome back</h1>
                 <p className="text-balance text-muted-foreground">
-                  Inicia sesión en tu cuenta de TimeSheet
+                  Sign in to your TimeSheet account
                 </p>
               </div>
               
@@ -48,11 +48,11 @@ export function LoginPage({
               )}
 
               <div className="grid gap-2">
-                <Label htmlFor="email">Correo Electrónico</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="correo@ejemplo.com"
+                  placeholder="email@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
@@ -61,7 +61,7 @@ export function LoginPage({
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password">Password</Label>
                 <Input 
                   id="password" 
                   type="password" 
@@ -73,13 +73,13 @@ export function LoginPage({
               </div>
               
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                {loading ? 'Signing in...' : 'Sign In'}
               </Button>
               
               <div className="text-center text-sm">
-                ¿No tienes una cuenta?{" "}
+                Don't have an account?{" "}
                 <Link to="/register" className="underline underline-offset-4 hover:text-primary">
-                  Regístrate
+                  Sign up
                 </Link>
               </div>
             </div>

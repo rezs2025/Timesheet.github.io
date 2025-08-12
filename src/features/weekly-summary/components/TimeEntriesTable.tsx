@@ -1,6 +1,5 @@
 import React from 'react';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { Edit, Trash2, Download } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -36,7 +35,7 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
   showEditButton = true,
   showDeleteButton = false,
   showExportButton = true,
-  exportFileName = 'registro-horas',
+  exportFileName = 'timesheet-records',
 }) => {
   const { state } = useSidebar();
   const isMobile = useIsMobile();
@@ -72,7 +71,7 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
     <Card className="mb-6">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Registro de Horas</CardTitle>
+          <CardTitle>Time Records</CardTitle>
           {showExportButton && entries.length > 0 && (
             <Button
               variant="outline"
@@ -81,7 +80,7 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
               className="gap-2"
             >
               <Download className="h-4 w-4" />
-              {!isMobile && 'Exportar Excel'}
+              {!isMobile && 'Export Excel'}
             </Button>
           )}
         </div>
@@ -92,14 +91,14 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
             <Table className="min-w-[800px]">
             <TableHeader>
               <TableRow>
-                <TableHead>Fecha</TableHead>
-                {showUserColumn && <TableHead>Empleado</TableHead>}
-                {showProjectColumn && <TableHead>Proyecto</TableHead>}
-                <TableHead>Entrada</TableHead>
-                <TableHead>Salida</TableHead>
-                <TableHead>Horas</TableHead>
-                <TableHead>Almuerzo</TableHead>
-                {(showEditButton || showDeleteButton) && <TableHead className="text-center">Acciones</TableHead>}
+                <TableHead>Date</TableHead>
+                {showUserColumn && <TableHead>Employee</TableHead>}
+                {showProjectColumn && <TableHead>Project</TableHead>}
+                <TableHead>Clock In</TableHead>
+                <TableHead>Clock Out</TableHead>
+                <TableHead>Hours</TableHead>
+                <TableHead>Lunch</TableHead>
+                {(showEditButton || showDeleteButton) && <TableHead className="text-center">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -111,7 +110,7 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
                   return (
                     <TableRow key={entry.id} className={isWeekend ? 'bg-muted/50' : ''}>
                       <TableCell className="font-medium whitespace-nowrap">
-                        {format(entry.startTime, 'dd/MM/yyyy', { locale: es })}
+                        {format(entry.startTime, 'EEEE MM/dd/yyyy')}
                       </TableCell>
                       {showUserColumn && (
                         <TableCell className="whitespace-nowrap">{entry.user.fullName}</TableCell>
@@ -169,7 +168,7 @@ const TimeEntriesTable: React.FC<TimeEntriesTableProps> = ({
               ) : (
                 <TableRow>
                   <TableCell colSpan={columnsCount} className="text-center text-muted-foreground py-4">
-                    No hay registros de horas para esta semana.
+                    No time records found for this week.
                   </TableCell>
                 </TableRow>
               )}

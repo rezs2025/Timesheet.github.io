@@ -10,14 +10,14 @@ const WeeklySummaryPage = () => {
   const { loading, user, error } = useAuth();
 
   if (loading) {
-    return <AppLoader text="Cargando resumen semanal..." />;
+    return <AppLoader text="Loading weekly summary..." />;
   }
 
   if (error || !user) {
     return (
       <div className="p-6">
         <Alert>
-          <AlertDescription>{error || 'Error de autenticación'}</AlertDescription>
+          <AlertDescription>{error || 'Authentication error'}</AlertDescription>
         </Alert>
       </div>
     );

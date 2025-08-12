@@ -77,17 +77,17 @@ export const UserCard: React.FC<UserCardProps> = ({
             {isLoading ? (
               <>
                 <div className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent mr-1" />
-                {isWorking ? 'Deteniendo...' : 'Iniciando...'}
+                {isWorking ? 'Stopping...' : 'Starting...'}
               </>
             ) : isWorking ? (
               <>
                 <Square className="h-3 w-3 mr-1" />
-                Detener
+                Stop
               </>
             ) : (
               <>
                 <Play className="h-3 w-3 mr-1" />
-                Iniciar
+                Start
               </>
             )}
           </Button>

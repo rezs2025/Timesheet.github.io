@@ -53,8 +53,8 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
           lunchMinutes: project.lunchMinutes
         });
         
-        toast.success('Trabajo finalizado', {
-          description: `${userProject.fullName} ha finalizado su trabajo en el proyecto`,
+        toast.success('Work completed', {
+          description: `${userProject.fullName} has finished working on the project`,
         });
       } else {
         await timeEntryService.createTimeEntry({
@@ -64,8 +64,8 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
           lunchMinutes: project.lunchMinutes
         });
         
-        toast.success('Trabajo iniciado', {
-          description: `${userProject.fullName} ha comenzado a trabajar en el proyecto`,
+        toast.success('Work started', {
+          description: `${userProject.fullName} has started working on the project`,
         });
       }
       
@@ -74,8 +74,8 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
       
     } catch (error) {
       console.error('Error toggling work status:', error);
-      toast.error('Error al cambiar estado', {
-        description: 'No se pudo actualizar el estado del trabajo',
+      toast.error('Error changing status', {
+        description: 'Could not update work status',
         duration: 5000,
       });
     } finally {
@@ -111,8 +111,8 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
     });
     
     if (eligibleUsers.length === 0) {
-      toast.info('Sin cambios necesarios', {
-        description: `Todos los usuarios seleccionados ya ${action === 'start' ? 'tienen trabajo iniciado' : 'han finalizado su trabajo'}`,
+      toast.info('No changes needed', {
+        description: `All selected users have already ${action === 'start' ? 'started working' : 'finished their work'}`,
       });
       return;
     }
@@ -139,7 +139,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
             });
           }
         } catch (error) {
-          errors.push(`${userProject.fullName}: Error al ${action === 'start' ? 'iniciar' : 'detener'} trabajo`);
+          errors.push(`${userProject.fullName}: Error ${action === 'start' ? 'starting' : 'stopping'} work`);
         }
       });
       
@@ -151,25 +151,25 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
       const skippedCount = selectedUserObjects.length - eligibleUsers.length;
       
       if (errors.length === 0) {
-        let description = `Se ${action === 'start' ? 'inició' : 'detuvo'} el trabajo para ${eligibleUsers.length} usuario(s)`;
+        let description = `Work ${action === 'start' ? 'started' : 'stopped'} for ${eligibleUsers.length} user(s)`;
         if (skippedCount > 0) {
-          description += `. Se omitieron ${skippedCount} usuario(s) que ya ${action === 'start' ? 'tenían trabajo iniciado' : 'habían finalizado su trabajo'}`;
+          description += `. Skipped ${skippedCount} user(s) who ${action === 'start' ? 'already had work started' : 'had already finished their work'}`;
         }
         
-        toast.success(`Acción masiva completada`, {
+        toast.success(`Bulk action completed`, {
           description,
         });
         setSelectedUsers(new Set()); // Clear selection after successful action
       } else {
-        toast.error('Algunas acciones fallaron', {
+        toast.error('Some actions failed', {
           description: errors.join(', '),
           duration: 5000,
         });
       }
       
     } catch (error) {
-      toast.error('Error en acción masiva', {
-        description: 'No se pudo completar la acción para todos los usuarios',
+      toast.error('Bulk action error', {
+        description: 'Could not complete the action for all users',
         duration: 5000,
       });
     } finally {
@@ -182,7 +182,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-primary">
           <Users className="h-5 w-5" />
-          Usuarios Asignados
+          Assigned Users
           <Badge variant="outline" className="ml-auto">
             {users.length}
           </Badge>
@@ -196,7 +196,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
                 className="data-[state=checked]:bg-primary"
               />
               <span className="text-sm text-muted-foreground">
-                Seleccionar todos ({selectedUsers.size}/{users.length})
+                Select all ({selectedUsers.size}/{users.length})
               </span>
             </div>
             {someSelected && (
@@ -213,7 +213,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
                   ) : (
                     <Play className="h-3 w-3 mr-1" />
                   )}
-                  Iniciar ({selectedUsers.size})
+                  Start ({selectedUsers.size})
                 </Button>
                 <Button
                   size="sm"
@@ -227,7 +227,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
                   ) : (
                     <Square className="h-3 w-3 mr-1" />
                   )}
-                  Detener ({selectedUsers.size})
+                  Stop ({selectedUsers.size})
                 </Button>
               </div>
             )}
@@ -251,7 +251,7 @@ export const AssignedUsersCard: React.FC<AssignedUsersCardProps> = ({
           <div className="text-center py-8">
             <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-sm text-muted-foreground">
-              No hay usuarios asignados a este proyecto
+              No users assigned to this project
             </p>
           </div>
         ) : (

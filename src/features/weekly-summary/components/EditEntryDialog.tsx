@@ -80,9 +80,9 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Editar Registro</DialogTitle>
+          <DialogTitle>Edit Record</DialogTitle>
           <DialogDescription>
-            Modifica los datos del registro de tiempo.
+            Modify the time record data.
           </DialogDescription>
         </DialogHeader>
         
@@ -90,7 +90,7 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="checkInDate">Fecha de Entrada</Label>
+                <Label htmlFor="checkInDate">Clock In Date</Label>
                 <Input
                   id="checkInDate"
                   type="date"
@@ -101,7 +101,7 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="checkInTime">Hora de Entrada</Label>
+                <Label htmlFor="checkInTime">Clock In Time</Label>
                 <Input
                   id="checkInTime"
                   type="time"
@@ -114,7 +114,7 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="checkOutDate">Fecha de Salida</Label>
+                <Label htmlFor="checkOutDate">Clock Out Date</Label>
                 <Input
                   id="checkOutDate"
                   type="date"
@@ -125,7 +125,7 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="checkOutTime">Hora de Salida</Label>
+                <Label htmlFor="checkOutTime">Clock Out Time</Label>
                 <Input
                   id="checkOutTime"
                   type="time"
@@ -137,7 +137,7 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="lunchMinutes">Minutos de Almuerzo</Label>
+            <Label htmlFor="lunchMinutes">Lunch Minutes</Label>
             <Input
               id="lunchMinutes"
               type="number"
@@ -149,10 +149,10 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
 
           {projects.length > 0 && (
             <div className="space-y-2">
-              <Label htmlFor="project">Proyecto</Label>
+              <Label htmlFor="project">Project</Label>
               <Select value={editForm.projectId} onValueChange={(value) => handleInputChange('projectId', value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar proyecto" />
+                  <SelectValue placeholder="Select project" />
                 </SelectTrigger>
                 <SelectContent>
                   {projects.map((project) => (
@@ -167,10 +167,10 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
-              Cancelar
+              Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
+              {loading ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogFooter>
         </form>

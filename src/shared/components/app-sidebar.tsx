@@ -34,13 +34,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       id: 'projects-admin',
-      title: "Proyectos",
+      title: "Projects",
       url: "/projects",
       icon: IconFolder,
     },
     {
       id: 'users-admin',
-      title: "Usuarios",
+      title: "Users",
       url: "/users",
       icon: IconUsers,
     },
@@ -61,7 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       id: 'projects-pm',
-      title: "Proyectos",
+      title: "Projects",
       url: "/projects",
       icon: IconFolder,
     },
@@ -70,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navEmployee = user?.role === 'employee' ? [
     {
       id: 'time-entry',
-      title: "Registro de Tiempo",
+      title: "Time Entry",
       url: "/time-entry",
       icon: IconClock,
     },
@@ -80,15 +80,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navWeeklySummary = user ? [
     {
       id: 'weekly-summary',
-      title: "Resumen Semanal",
+      title: "Weekly Summary",
       url: "/weekly-summary",
       icon: IconChartBar,
     },
   ] : []
 
   const userData = {
-    name: user?.fullName || user?.email?.split('@')[0] || "Usuario",
-    email: user?.email || "usuario@timesheet.com",
+    name: user?.fullName || user?.email?.split('@')[0] || "User",
+    email: user?.email || "user@timesheet.com",
     avatar: "",
   }
 

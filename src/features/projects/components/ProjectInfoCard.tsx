@@ -45,7 +45,7 @@ export const ProjectInfoCard: React.FC<ProjectInfoCardProps> = ({
         {project.description && (
           <div>
             <h3 className="font-medium text-sm text-muted-foreground">
-              Descripción
+              Description
             </h3>
             <p className="text-sm">{project.description}</p>
           </div>
@@ -53,7 +53,7 @@ export const ProjectInfoCard: React.FC<ProjectInfoCardProps> = ({
 
         <div>
           <h3 className="font-medium text-sm text-muted-foreground">
-            Dirección
+            Address
           </h3>
           <div>
             <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ export const ProjectInfoCard: React.FC<ProjectInfoCardProps> = ({
 
         <div>
           <h3 className="font-medium text-sm text-muted-foreground">
-            Tiempo de Almuerzo
+            Lunch Time
           </h3>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground" />

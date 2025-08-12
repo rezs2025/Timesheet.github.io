@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog";
 import { SearchInput } from "@/shared/components/SearchInput";
+import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 
 export function UsersAdminPage() {
   const navigate = useNavigate();
@@ -36,6 +37,8 @@ export function UsersAdminPage() {
   
   const [editing, setEditing] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const isMobile = useIsMobile();
 
   const openNew = () => {
@@ -59,16 +62,28 @@ export function UsersAdminPage() {
     refresh();
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('¿Está seguro de que desea eliminar este usuario?')) {
-      try {
-        await usersService.remove(id);
-        refresh();
-      } catch (error) {
-        console.error('Error al eliminar usuario:', error);
-        // Aquí podrías mostrar un toast o mensaje de error
-      }
+  const handleDelete = (id: string) => {
+    setDeletingUserId(id);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingUserId) return;
+    
+    setIsDeleting(true);
+    try {
+      await usersService.remove(deletingUserId);
+      setDeletingUserId(null);
+      refresh();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      // TODO: Show toast error message
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeletingUserId(null);
   };
 
   const onSearch = useCallback((q: string) => {
@@ -81,11 +96,11 @@ export function UsersAdminPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className={`font-bold ${isMobile ? 'text-2xl' : 'text-3xl'}`}>
-          {!isMobile && 'Gestión de'} Usuarios
+          {!isMobile && 'User'} Management
         </h1>
         <Button onClick={openNew} className="gap-2">
           <Plus className="h-4 w-4" />
-          {!isMobile && 'Usuario'} Nuevo
+          {!isMobile && 'New'} User
         </Button>
       </div>
 
@@ -94,7 +109,7 @@ export function UsersAdminPage() {
         <SearchInput
           initialValue={query}
           onSearch={onSearch}
-          placeholder="Buscar usuarios..."
+          placeholder="Search users..."
         />
       </div>
 
@@ -102,7 +117,7 @@ export function UsersAdminPage() {
       <div className="space-y-4">
         {loading && (
           <div className="flex items-center justify-center py-8">
-            <div className="text-muted-foreground">Cargando usuarios…</div>
+            <div className="text-muted-foreground">Loading users…</div>
           </div>
         )}
         
@@ -125,7 +140,7 @@ export function UsersAdminPage() {
               onPageChange={setPage}
             />
             <div className="text-sm text-muted-foreground">
-              Total de usuarios: {totalCount}
+              Total users: {totalCount}
             </div>
           </>
         )}
@@ -136,12 +151,12 @@ export function UsersAdminPage() {
         <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Editar Usuario" : "Nuevo Usuario"}
+              {editing ? "Edit User" : "New User"}
             </DialogTitle>
             <DialogDescription>
               {editing 
-                ? "Modifica los datos del usuario seleccionado."
-                : "Completa los datos para crear un nuevo usuario."
+                ? "Modify the selected user's data."
+                : "Complete the data to create a new user."
               }
             </DialogDescription>
           </DialogHeader>
@@ -152,6 +167,15 @@ export function UsersAdminPage() {
           />
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deletingUserId}
+        title="Are you sure?"
+        description="This action cannot be undone. The selected user and all their associated data will be permanently deleted."
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        loading={isDeleting}
+      />
 
     </div>
   );

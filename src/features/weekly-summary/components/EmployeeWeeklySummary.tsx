@@ -292,7 +292,7 @@ const EmployeeWeeklySummary = () => {
         showProjectColumn={false}
         showEditButton={false}
         showExportButton={true}
-        exportFileName={`mis-horas-${format(currentWeekStart, 'dd-MM-yyyy')}_${format(endOfWeek(currentWeekStart, { weekStartsOn: 1 }), 'dd-MM-yyyy')}`}
+        exportFileName={`my-timesheet-${format(currentWeekStart, 'MM-dd-yyyy')}_${format(endOfWeek(currentWeekStart, { weekStartsOn: 1 }), 'MM-dd-yyyy')}`}
       />
     </div>
   );

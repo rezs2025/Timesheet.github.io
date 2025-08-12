@@ -1,6 +1,5 @@
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { TimeEntry } from '@/features/time-entry/types';
 
 export interface ExcelExportData {
@@ -15,8 +14,8 @@ export interface ExcelExportData {
 export const exportToExcel = ({
   entries,
   calculateHoursWorked,
-  filename = 'registro-horas',
-  sheetName = 'Registro de Horas',
+  filename = 'timesheet-records',
+  sheetName = 'Timesheet Records',
   includeUserColumn = true,
   includeProjectColumn = true,
 }: ExcelExportData) => {
@@ -26,21 +25,21 @@ export const exportToExcel = ({
     const endTime = entry.endTime ? new Date(entry.endTime) : null;
     
     const rowData: any = {
-      'Fecha': format(startTime, 'EEEE dd/MM/yyyy', { locale: es }),
+      'Date': format(startTime, 'EEEE MM/dd/yyyy'),
     };
 
     if (includeUserColumn) {
-      rowData['Empleado'] = entry.user.fullName;
+      rowData['Employee'] = entry.user.fullName;
     }
 
     if (includeProjectColumn) {
-      rowData['Proyecto'] = entry.project.name;
+      rowData['Project'] = entry.project.name;
     }
 
-    rowData['Entrada'] = format(startTime, 'HH:mm');
-    rowData['Salida'] = endTime ? format(endTime, 'HH:mm') : '-';
-    rowData['Horas Trabajadas'] = entry.workedHoursFormatted || calculateHoursWorked(entry);
-    rowData['Almuerzo (min)'] = entry.lunchMinutes || 0;
+    rowData['Clock In'] = format(startTime, 'HH:mm');
+    rowData['Clock Out'] = endTime ? format(endTime, 'HH:mm') : '-';
+    rowData['Hours Worked'] = entry.workedHoursFormatted || calculateHoursWorked(entry);
+    rowData['Lunch (min)'] = entry.lunchMinutes || 0;
 
     return rowData;
   });
@@ -51,13 +50,13 @@ export const exportToExcel = ({
   
   // Set column widths
   const columnWidths = [
-    { wch: 20 }, // Fecha
-    ...(includeUserColumn ? [{ wch: 25 }] : []), // Empleado
-    ...(includeProjectColumn ? [{ wch: 30 }] : []), // Proyecto
-    { wch: 10 }, // Entrada
-    { wch: 10 }, // Salida
-    { wch: 15 }, // Horas Trabajadas
-    { wch: 12 }, // Almuerzo
+    { wch: 20 }, // Date
+    ...(includeUserColumn ? [{ wch: 25 }] : []), // Employee
+    ...(includeProjectColumn ? [{ wch: 30 }] : []), // Project
+    { wch: 10 }, // Clock In
+    { wch: 10 }, // Clock Out
+    { wch: 15 }, // Hours Worked
+    { wch: 12 }, // Lunch
   ];
   
   ws['!cols'] = columnWidths;
@@ -81,14 +80,14 @@ export const exportWeeklySummaryToExcel = (
   includeUserColumn = true,
   includeProjectColumn = true
 ) => {
-  const weekRange = `${format(weekStart, 'dd-MM-yyyy')}_${format(weekEnd, 'dd-MM-yyyy')}`;
-  const filename = `resumen-semanal-${weekRange}`;
+  const weekRange = `${format(weekStart, 'MM-dd-yyyy')}_${format(weekEnd, 'MM-dd-yyyy')}`;
+  const filename = `weekly-summary-${weekRange}`;
   
   exportToExcel({
     entries,
     calculateHoursWorked,
     filename,
-    sheetName: `Semana ${format(weekStart, 'dd/MM')} - ${format(weekEnd, 'dd/MM')}`,
+    sheetName: `Week ${format(weekStart, 'MM/dd')} - ${format(weekEnd, 'MM/dd')}`,
     includeUserColumn,
     includeProjectColumn,
   });

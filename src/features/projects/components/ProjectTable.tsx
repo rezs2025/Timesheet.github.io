@@ -47,7 +47,7 @@ export const ProjectTable: React.FC<Props> = ({
   const PaginationControls = () => (
     <div className="flex items-center justify-between space-x-2 py-4">
       <div className="text-sm text-muted-foreground">
-        Página {page} de {totalPages}
+        Page {page} of {totalPages}
       </div>
       <div className="flex space-x-2">
         <Button
@@ -94,7 +94,7 @@ export const ProjectTable: React.FC<Props> = ({
                   className="h-8 w-8 p-0"
                 >
                   <Edit className="h-4 w-4" />
-                  <span className="sr-only">Editar proyecto</span>
+                  <span className="sr-only">Edit project</span>
                 </Button>
                 <Button
                   variant="ghost"
@@ -103,7 +103,7 @@ export const ProjectTable: React.FC<Props> = ({
                   className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                 >
                   <Trash2 className="h-4 w-4" />
-                  <span className="sr-only">Eliminar proyecto</span>
+                  <span className="sr-only">Delete project</span>
                 </Button>
               </div>
             </CardTitle>
@@ -116,14 +116,14 @@ export const ProjectTable: React.FC<Props> = ({
             )}
             <div className="space-y-1 text-sm">
               <div>
-                <span className="font-medium">Dirección:</span> {project.address || '-'}
+                <span className="font-medium">Address:</span> {project.address || '-'}
               </div>
               <div>
-                <span className="font-medium">Coordenadas:</span>{' '}
+                <span className="font-medium">Coordinates:</span>{' '}
                 {`${project.latitude.toFixed(4)}, ${project.longitude.toFixed(4)}`}
               </div>
               <div>
-                <span className="font-medium">Tiempo de almuerzo:</span>{' '}
+                <span className="font-medium">Lunch time:</span>{' '}
                 <Badge variant="secondary">{project.lunchMinutes} min</Badge>
               </div>
             </div>
@@ -138,10 +138,10 @@ export const ProjectTable: React.FC<Props> = ({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Dirección</TableHead>
-              <TableHead className="text-right">Tiempo Almuerzo</TableHead>
-              <TableHead className="text-center">Acciones</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Address</TableHead>
+              <TableHead className="text-right">Lunch Time</TableHead>
+              <TableHead className="text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -170,7 +170,7 @@ export const ProjectTable: React.FC<Props> = ({
                           onClick={() => onEdit(project.id)}
                         >
                           <Edit className="h-4 w-4" />
-                          <span className="sr-only">Editar proyecto</span>
+                          <span className="sr-only">Edit project</span>
                         </Button>
                         <Button
                           variant="ghost"
@@ -179,7 +179,7 @@ export const ProjectTable: React.FC<Props> = ({
                           className="text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Eliminar proyecto</span>
+                          <span className="sr-only">Delete project</span>
                         </Button>
                       </>
                     )}

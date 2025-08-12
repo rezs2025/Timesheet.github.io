@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const handleUnauthorized = (e: Event) => {
       const detail = (e as CustomEvent).detail;
-      const message = detail?.message || "Sesión expirada.";
+      const message = detail?.message || "Session expired.";
       
       localStorage.removeItem("token");
       setUser(null);
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const timeoutId = setTimeout(() => {
         setLoading(false);
         setError(
-          "La verificación está tomando más tiempo del esperado. Intenta recargar la página."
+          "Verification is taking longer than expected. Try reloading the page."
         );
       }, 8000);
 
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .catch(() => {
           clearTimeout(timeoutId);
           localStorage.removeItem("token");
-          setError("Sesión expirada. Por favor inicia sesión de nuevo.");
+          setError("Session expired. Please sign in again.");
         })
         .finally(() => {
           clearTimeout(timeoutId);
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     setError(null);
     if (!dto.email || !dto.password) {
-      setError("Email y contraseña son requeridos");
+      setError("Email and password are required");
       setLoading(false);
       return;
     }
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const u = await authService.me();
       setUser(u);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Credenciales inválidas");
+      setError(err.response?.data?.message || "Invalid credentials");
     } finally {
       setLoading(false);
     }
@@ -96,22 +96,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     setError(null);
     if (!dto.email || !dto.password || !dto.fullName) {
-      setError("Email, contraseña y nombre son requeridos");
+      setError("Email, password and name are required");
       setLoading(false);
       return;
     }
     if (dto.password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
+      setError("Password must be at least 6 characters");
       setLoading(false);
       return;
     }
     if (dto.password !== dto.confirmPassword) {
-      setError("Las contraseñas no coinciden");
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dto.email)) {
-      setError("Email inválido");
+      setError("Invalid email");
       setLoading(false);
       return;
     }
@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const u = await authService.me();
       setUser(u);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Error al registrar usuario");
+      setError(err.response?.data?.message || "Error registering user");
     } finally {
       setLoading(false);
     }

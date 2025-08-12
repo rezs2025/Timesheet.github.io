@@ -33,7 +33,7 @@ const PMDashboard = () => {
         );
         setProjects(projects);
       } catch (err) {
-        setError('Error al cargar los proyectos');
+        setError('Error loading projects');
       } finally {
         setLoading(false);
       }
@@ -43,14 +43,14 @@ const PMDashboard = () => {
   }, []);
 
   if (loadingUser || loading) {
-    return <AppLoader text="Cargando panel de gestión..." />;
+    return <AppLoader text="Loading management panel..." />;
   }
 
   if (errorUser || !user) {
     return (
       <div className="p-6">
         <Alert>
-          <AlertDescription>{errorUser || 'Error de autenticación'}</AlertDescription>
+          <AlertDescription>{errorUser || 'Authentication error'}</AlertDescription>
         </Alert>
       </div>
     );
@@ -73,9 +73,9 @@ const PMDashboard = () => {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Panel de Gestión de Proyectos</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Project Management Panel</h1>
         <p className="text-muted-foreground">
-          Bienvenido, {user.fullName || user.email}
+          Welcome, {user.fullName || user.email}
         </p>
       </div>
 
@@ -85,10 +85,10 @@ const PMDashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building className="h-5 w-5" />
-              Mis Proyectos
+              My Projects
             </CardTitle>
             <CardDescription>
-              Estado actual de proyectos asignados
+              Current status of assigned projects
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -105,7 +105,7 @@ const PMDashboard = () => {
                 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Usuarios activos</span>
+                    <span>Active users</span>
                     <span>{getProjectProgress(project.totalEmployees, project.activeEmployees)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -117,8 +117,8 @@ const PMDashboard = () => {
                 </div>
                 
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>{project.totalEmployees} miembros</span>
-                  <span>{project.activeEmployees} activo</span>
+                  <span>{project.totalEmployees} members</span>
+                  <span>{project.activeEmployees} active</span>
                 </div>
               </div>
             ))}
@@ -128,7 +128,7 @@ const PMDashboard = () => {
               onClick={() => navigate('/projects')}
               className="w-full"
             >
-              Ver Todos los Proyectos
+              View All Projects
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </CardContent>

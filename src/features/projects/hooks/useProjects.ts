@@ -45,7 +45,7 @@ export function useProjects(
         setTotalCount(totalCount);
         setTotalPages(totalPages);
       } catch (err: any) {
-        setError(err.response?.data?.message ?? "Error al cargar proyectos");
+        setError(err.response?.data?.message ?? "Error loading projects");
       } finally {
         setLoading(false);
       }

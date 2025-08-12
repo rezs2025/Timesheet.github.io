@@ -60,7 +60,7 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
         setValue("longitude", coords.longitude);
       },
       (err) => {
-        alert("Error al obtener ubicación: " + err.message);
+        alert("Error getting location: " + err.message);
       }
     );
   };
@@ -78,16 +78,16 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {/* Nombre */}
       <div className="space-y-2">
-        <Label htmlFor="name">Nombre *</Label>
+        <Label htmlFor="name">Name *</Label>
         <Controller
           name="name"
           control={control}
-          rules={{ required: "El nombre es obligatorio" }}
+          rules={{ required: "Name is required" }}
           render={({ field }) => (
             <Input
               {...field}
               id="name"
-              placeholder="Nombre del proyecto"
+              placeholder="Project name"
               className={errors.name ? "border-destructive" : ""}
             />
           )}
@@ -99,7 +99,7 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
 
       {/* Descripción */}
       <div className="space-y-2">
-        <Label htmlFor="description">Descripción</Label>
+        <Label htmlFor="description">Description</Label>
         <Controller
           name="description"
           control={control}
@@ -107,7 +107,7 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
             <Input
               {...field}
               id="description"
-              placeholder="Descripción del proyecto (opcional)"
+              placeholder="Project description (optional)"
             />
           )}
         />
@@ -115,7 +115,7 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
 
       {/* Dirección */}
       <div className="space-y-2">
-        <Label htmlFor="address">Dirección</Label>
+        <Label htmlFor="address">Address</Label>
         <Controller
           name="address"
           control={control}
@@ -123,7 +123,7 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
             <Input
               {...field}
               id="address"
-              placeholder="Dirección del proyecto"
+              placeholder="Project address"
             />
           )}
         />
@@ -138,7 +138,7 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
           className="gap-2"
         >
           <MapPin className="h-4 w-4" />
-          Obtener ubicación actual
+          Get current location
         </Button>
       </div>
 
@@ -213,12 +213,12 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
 
       {/* Tiempo de almuerzo */}
       <div className="space-y-2">
-        <Label htmlFor="lunchMinutes">Tiempo de almuerzo (minutos) *</Label>
+        <Label htmlFor="lunchMinutes">Lunch time (minutes) *</Label>
         <Controller
           name="lunchMinutes"
           control={control}
           rules={{
-            required: "Tiempo de almuerzo obligatorio",
+            required: "Lunch time is required",
             min: { value: 0, message: "Min 0" },
           }}
           render={({ field }) => (
@@ -250,11 +250,11 @@ export function ProjectForm({ projectId, onSaved, onCancel }: Props) {
           onClick={onCancel} 
           disabled={isSubmitting}
         >
-          Cancelar
+          Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting} className="gap-2">
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {projectId ? "Guardar" : "Crear"}
+          {projectId ? "Save" : "Create"}
         </Button>
       </div>
     </form>

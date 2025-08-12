@@ -84,7 +84,7 @@ const AdminDashboard = () => {
     return (
       <div className="p-6">
         <Alert>
-          <AlertDescription>{errorUser || 'Error de autenticación'}</AlertDescription>
+          <AlertDescription>{errorUser || 'Authentication error'}</AlertDescription>
         </Alert>
       </div>
     );
@@ -129,9 +129,9 @@ const AdminDashboard = () => {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Panel de Administración</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Administration Panel</h1>
         <p className="text-muted-foreground">
-          Bienvenido, {user.fullName || user.email}
+          Welcome, {user.fullName || user.email}
         </p>
       </div>
 
@@ -156,7 +156,7 @@ const AdminDashboard = () => {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Building className="h-4 w-4" />
-              Proyectos Activos
+              Active Projects
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -177,7 +177,7 @@ const AdminDashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{stats.activeTimesheets}</div>
             <p className="text-xs text-muted-foreground">
-              Empleados activos
+              Active employees
             </p>
           </CardContent>
         </Card>

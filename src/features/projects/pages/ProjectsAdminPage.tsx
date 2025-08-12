@@ -67,12 +67,12 @@ export function ProjectsAdminPage() {
     setIsDeleting(true);
     try {
       await projectsService.remove(deletingProjectId);
-      toast.success('Proyecto eliminado correctamente');
+      toast.success('Project deleted successfully');
       setDeletingProjectId(null);
       refresh();
     } catch (error) {
       console.error('Error deleting project:', error);
-      toast.error('Error al eliminar el proyecto');
+      toast.error('Error deleting project');
     } finally {
       setIsDeleting(false);
     }
@@ -92,12 +92,12 @@ export function ProjectsAdminPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className={`font-bold ${isMobile ? 'text-2xl' : 'text-3xl'}`}>
-          {!isMobile && 'Administrar'} Proyectos
+          {!isMobile && 'Manage'} Projects
         </h1>
         {user?.role === 'admin' && (
           <Button onClick={openNew} className="gap-2">
             <Plus className="h-4 w-4" />
-            {!isMobile && 'Proyecto'} Nuevo
+            {!isMobile && 'New'} Project
           </Button>
         )}
       </div>
@@ -114,7 +114,7 @@ export function ProjectsAdminPage() {
       <div className="space-y-4">
         {loading && (
           <div className="flex items-center justify-center py-8">
-            <div className="text-muted-foreground">Cargando proyectos…</div>
+            <div className="text-muted-foreground">Loading projects…</div>
           </div>
         )}
         
@@ -136,7 +136,7 @@ export function ProjectsAdminPage() {
               onPageChange={setPage}
             />
             <div className="text-sm text-muted-foreground">
-              Total de proyectos: {totalCount}
+              Total projects: {totalCount}
             </div>
           </>
         )}
@@ -147,12 +147,12 @@ export function ProjectsAdminPage() {
         <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Editar Proyecto" : "Nuevo Proyecto"}
+              {editing ? "Edit Project" : "New Project"}
             </DialogTitle>
             <DialogDescription>
               {editing 
-                ? "Modifica los datos del proyecto seleccionado."
-                : "Completa los datos para crear un nuevo proyecto."
+                ? "Modify the selected project data."
+                : "Complete the data to create a new project."
               }
             </DialogDescription>
           </DialogHeader>
@@ -166,8 +166,8 @@ export function ProjectsAdminPage() {
 
       <ConfirmDialog
         open={!!deletingProjectId}
-        title="¿Estás seguro?"
-        description="Esta acción no se puede deshacer. Se eliminará permanentemente el proyecto seleccionado y todos sus datos asociados."
+        title="Are you sure?"
+        description="This action cannot be undone. The selected project and all its associated data will be permanently deleted."
         onCancel={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         loading={isDeleting}

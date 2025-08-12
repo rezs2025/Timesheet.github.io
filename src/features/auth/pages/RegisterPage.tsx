@@ -55,9 +55,9 @@ export function RegisterPage({
                 <div className="bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mb-4">
                   <UserPlus className="h-6 w-6" />
                 </div>
-                <h1 className="text-2xl font-bold">Crear cuenta</h1>
+                <h1 className="text-2xl font-bold">Create account</h1>
                 <p className="text-balance text-muted-foreground">
-                  Únete a TimeSheet para gestionar tu tiempo
+                  Join TimeSheet to manage your time
                 </p>
               </div>
               
@@ -68,12 +68,12 @@ export function RegisterPage({
               )}
 
               <div className="grid gap-2">
-                <Label htmlFor="name">Nombre Completo</Label>
+                <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="Tu nombre completo"
+                  placeholder="Your full name"
                   value={formData.name}
                   onChange={handleChange}
                   disabled={loading}
@@ -83,12 +83,12 @@ export function RegisterPage({
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="email">Correo Electrónico</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="correo@ejemplo.com"
+                  placeholder="email@example.com"
                   value={formData.email}
                   onChange={handleChange}
                   disabled={loading}
@@ -97,12 +97,12 @@ export function RegisterPage({
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password">Password</Label>
                 <Input 
                   id="password"
                   name="password"
                   type="password" 
-                  placeholder="Tu contraseña"
+                  placeholder="Your password"
                   value={formData.password}
                   onChange={handleChange}
                   disabled={loading}
@@ -111,12 +111,12 @@ export function RegisterPage({
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input 
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password" 
-                  placeholder="Confirma tu contraseña"
+                  placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   disabled={loading}
@@ -125,13 +125,13 @@ export function RegisterPage({
               </div>
               
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Registrando...' : 'Registrarse'}
+                {loading ? 'Registering...' : 'Sign Up'}
               </Button>
               
               <div className="text-center text-sm">
-                ¿Ya tienes una cuenta?{" "}
+                Already have an account?{" "}
                 <Link to="/login" className="underline underline-offset-4 hover:text-primary">
-                  Inicia sesión
+                  Sign in
                 </Link>
               </div>
             </div>

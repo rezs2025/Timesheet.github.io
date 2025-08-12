@@ -44,7 +44,7 @@ export const UserProjectAssignmentForm: React.FC<UserProjectAssignmentFormProps>
       setSelectedProjectId('');
       setError(null);
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Error al asignar proyecto');
+      setError(err.response?.data?.message ?? 'Error assigning project');
     } finally {
       setLoading(false);
     }
@@ -60,11 +60,11 @@ export const UserProjectAssignmentForm: React.FC<UserProjectAssignmentFormProps>
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label className="text-sm">Proyecto</Label>
+          <Label className="text-sm">Project</Label>
           <ProjectSearch
             value={selectedProjectId}
             onValueChange={setSelectedProjectId}
-            placeholder="Buscar y seleccionar proyecto..."
+            placeholder="Search and select project..."
             disabled={loading}
           />
         </div>
@@ -76,14 +76,14 @@ export const UserProjectAssignmentForm: React.FC<UserProjectAssignmentFormProps>
           onClick={onCancel}
           disabled={loading}
         >
-          Cancelar
+          Cancel
         </Button>
         <Button
           onClick={handleSubmit}
           disabled={loading || !selectedProjectId}
         >
           <Plus className="h-4 w-4 mr-2" />
-          Asignar Proyecto
+          Assign Project
         </Button>
       </div>
 

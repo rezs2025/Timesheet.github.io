@@ -59,7 +59,7 @@ export function UserProjectsPage() {
         setUserProjects(userProjectsData);
         setAllProjects(allProjectsData.projects);
       } catch (err: any) {
-        setError(err.response?.data?.message ?? 'Error al cargar datos');
+        setError(err.response?.data?.message ?? 'Error loading data');
       } finally {
         setLoading(false);
       }
@@ -78,7 +78,7 @@ export function UserProjectsPage() {
       setError(null);
       setProjectToDelete(null);
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Error al remover asignación');
+      setError(err.response?.data?.message ?? 'Error removing assignment');
     } finally {
       setLoading(false);
     }
@@ -98,7 +98,7 @@ export function UserProjectsPage() {
       case 'pm':
         return { label: 'Project Manager', variant: 'secondary' as const, icon: UserCheck };
       case 'employee':
-        return { label: 'Empleado', variant: 'default' as const, icon: Users };
+        return { label: 'Employee', variant: 'default' as const, icon: Users };
       default:
         return { label: type, variant: 'default' as const, icon: Users };
     }
@@ -112,7 +112,7 @@ export function UserProjectsPage() {
   if (loading && !user) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-muted-foreground">Cargando...</div>
+        <div className="text-muted-foreground">Loading...</div>
       </div>
     );
   }
@@ -120,7 +120,7 @@ export function UserProjectsPage() {
   if (!user) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-destructive">Usuario no encontrado</div>
+        <div className="text-destructive">User not found</div>
       </div>
     );
   }
@@ -136,7 +136,7 @@ export function UserProjectsPage() {
           className="h-8 px-2 text-muted-foreground hover:text-foreground -ml-2"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
-          Volver a usuarios
+          Back to users
         </Button>
       </div>
 
@@ -144,13 +144,13 @@ export function UserProjectsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`font-bold ${isMobile ? 'text-xl' : 'text-2xl'}`}>
-            Proyectos de {user.fullName}
+            Projects for {user.fullName}
           </h1>
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
         <Button onClick={() => setModalOpen(true)} className="gap-2">
           <Plus className="h-4 w-4" />
-          {!isMobile && 'Asignar'} Proyecto
+          {!isMobile && 'Assign'} Project
         </Button>
       </div>
 
@@ -166,7 +166,7 @@ export function UserProjectsPage() {
           {userProjects.length === 0 ? (
             <Card>
               <CardContent className="text-center py-8">
-                <p className="text-muted-foreground">No hay proyectos asignados</p>
+                <p className="text-muted-foreground">No assigned projects</p>
               </CardContent>
             </Card>
           ) : (
@@ -222,17 +222,17 @@ export function UserProjectsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Proyecto</TableHead>
-                <TableHead>Dirección</TableHead>
-                <TableHead>Rol</TableHead>
-                <TableHead className="text-center">Acciones</TableHead>
+                <TableHead>Project</TableHead>
+                <TableHead>Address</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {userProjects.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                    No hay proyectos asignados
+                    No assigned projects
                   </TableCell>
                 </TableRow>
               ) : (
@@ -280,9 +280,9 @@ export function UserProjectsPage() {
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-w-[96vw] sm:max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>Asignar Proyecto</DialogTitle>
+            <DialogTitle>Assign Project</DialogTitle>
             <DialogDescription>
-              Selecciona un proyecto para asignar a {user.fullName}.
+              Select a project to assign to {user.fullName}.
             </DialogDescription>
           </DialogHeader>
           {user && (
@@ -299,8 +299,8 @@ export function UserProjectsPage() {
       {/* Dialog de confirmación para eliminar */}
       <ConfirmDialog
         open={!!projectToDelete}
-        title="¿Eliminar asignación?"
-        description="Esta acción no se puede deshacer. Se eliminará permanentemente la asignación del proyecto para este usuario."
+        title="Delete assignment?"
+        description="This action cannot be undone. The project assignment for this user will be permanently deleted."
         onCancel={() => setProjectToDelete(null)}
         onConfirm={handleRemoveAssignment}
         loading={loading}

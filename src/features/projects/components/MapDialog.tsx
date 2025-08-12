@@ -43,7 +43,7 @@ export const MapDialog: React.FC<MapDialogProps> = ({
           className="h-8 bg-primary text-white"
         >
           <MapIcon className="h-3 w-3 mr-1" />
-          Ver mapa
+          View map
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl w-full">

@@ -41,8 +41,8 @@ export const ProjectDetailPage: React.FC = () => {
         setProjectUsers(usersData || []);
       } catch (error) {
         console.error('Error fetching project:', error);
-        toast.error('Error al cargar proyecto', {
-          description: 'No se pudo cargar la información del proyecto',
+        toast.error('Error loading project', {
+          description: 'Could not load project information',
           duration: 5000,
         });
         navigate('/projects');
@@ -111,9 +111,9 @@ export const ProjectDetailPage: React.FC = () => {
     return (
       <div className="p-6">
         <div className="text-center">
-          <h2 className="text-xl font-semibold">Proyecto no encontrado</h2>
+          <h2 className="text-xl font-semibold">Project not found</h2>
           <Button onClick={handleGoBack} className="mt-4">
-            Volver a proyectos
+            Back to projects
           </Button>
         </div>
       </div>
@@ -131,7 +131,7 @@ export const ProjectDetailPage: React.FC = () => {
             className="h-8 px-2 text-muted-foreground hover:text-foreground -ml-2"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
-            Volver a proyectos
+            Back to projects
         </Button>
       </div>
 

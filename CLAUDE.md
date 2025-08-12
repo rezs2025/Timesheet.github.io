@@ -67,4 +67,4 @@ This is a **React TypeScript timesheet application** built with Vite, Firebase, 
 ### Firebase Integration
 - Authentication service in `src/shared/services/`
 - Role-based access control throughout the application
-- Spanish language interface (timesheet context)
+- English language interface (timesheet application)

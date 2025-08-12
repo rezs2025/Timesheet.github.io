@@ -73,14 +73,14 @@ const ManagerWeeklySummary = () => {
         lunchMinutes: editForm.lunchMinutes,
       });
       
-      toast.success('Registro actualizado correctamente');
+      toast.success('Record updated successfully');
       setEditingEntry(null);
       
       // Refresh the data
       await refetch();
     } catch (error) {
       console.error('Error updating time entry:', error);
-      toast.error('Error al actualizar el registro');
+      toast.error('Error updating record');
     } finally {
       setIsEditLoading(false);
     }
@@ -96,14 +96,14 @@ const ManagerWeeklySummary = () => {
     setIsDeleteLoading(true);
     try {
       await timeEntryService.deleteTimeEntry(deletingEntryId);
-      toast.success('Registro eliminado correctamente');
+      toast.success('Record deleted successfully');
       setDeletingEntryId(null);
       
       // Refresh the data
       await refetch();
     } catch (error) {
       console.error('Error deleting time entry:', error);
-      toast.error('Error al eliminar el registro');
+      toast.error('Error deleting record');
     } finally {
       setIsDeleteLoading(false);
     }
@@ -114,14 +114,14 @@ const ManagerWeeklySummary = () => {
   };
 
   if (loadingUser || loading) {
-    return <AppLoader text="Cargando resumen del equipo..." />;
+    return <AppLoader text="Loading team summary..." />;
   }
 
   if (!user) {
     return (
       <div className="p-6">
         <Alert>
-          <AlertDescription>Error de autenticación</AlertDescription>
+          <AlertDescription>Authentication error</AlertDescription>
         </Alert>
       </div>
     );
@@ -131,10 +131,10 @@ const ManagerWeeklySummary = () => {
     <div className="px-4 py-6 sm:px-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          {user?.role === 'admin' ? 'Resumen del Sistema' : 'Resumen del Equipo'}
+          {user?.role === 'admin' ? 'System Overview' : 'Team Summary'}
         </h1>
         <p className="text-muted-foreground">
-          {user?.role === 'admin' ? 'Vista completa del sistema' : 'Gestión de horas del equipo'} - {user?.fullName || user?.email}
+          {user?.role === 'admin' ? 'Complete system view' : 'Team time management'} - {user?.fullName || user?.email}
         </p>
       </div>
       <Card>
@@ -166,7 +166,7 @@ const ManagerWeeklySummary = () => {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Users className="h-4 w-4" />
-              {user?.role === 'admin' ? 'Total Usuarios' : 'Total Miembros'}
+              {user?.role === 'admin' ? 'Total Users' : 'Total Members'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -178,7 +178,7 @@ const ManagerWeeklySummary = () => {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Users className="h-4 w-4 text-green-600" />
-              {user?.role === 'admin' ? 'Usuarios Activos' : 'Activos'}
+              {user?.role === 'admin' ? 'Active Users' : 'Active'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -190,10 +190,10 @@ const ManagerWeeklySummary = () => {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Clock className="h-4 w-4" />
-              Horas Totales
+              Total Hours
             </CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
-              Total de horas, descontado tiempos de descanso
+              Total hours worked, excluding break times
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -215,7 +215,7 @@ const ManagerWeeklySummary = () => {
         onDeleteClick={handleDeleteClick}
         showDeleteButton={true}
         showExportButton={true}
-        exportFileName={`resumen-semanal-${format(currentWeekStart, 'dd-MM-yyyy')}_${format(endOfWeek(currentWeekStart, { weekStartsOn: 1 }), 'dd-MM-yyyy')}`}
+        exportFileName={`weekly-summary-${format(currentWeekStart, 'MM-dd-yyyy')}_${format(endOfWeek(currentWeekStart, { weekStartsOn: 1 }), 'MM-dd-yyyy')}`}
       />
 
       <EditEntryDialog
@@ -227,8 +227,8 @@ const ManagerWeeklySummary = () => {
       />
       <ConfirmDialog
         open={!!deletingEntryId}
-        title="¿Estás seguro?"
-        description="Esta acción no se puede deshacer. Se eliminará permanentemente el registro de tiempo seleccionado."
+        title="Are you sure?"
+        description="This action cannot be undone. The selected time record will be permanently deleted."
         onCancel={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         loading={isDeleteLoading}
