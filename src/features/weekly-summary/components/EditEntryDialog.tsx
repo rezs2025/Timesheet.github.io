@@ -75,7 +75,10 @@ const EditEntryDialog: React.FC<EditEntryDialogProps> = ({
 
   return (
     <Dialog open={!!editingEntry} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Editar Registro</DialogTitle>
           <DialogDescription>
