@@ -34,7 +34,7 @@ export const ProjectInfoCard: React.FC<ProjectInfoCardProps> = ({
   };
 
   return (
-    <Card className="bg-gray-100">
+    <Card className="bg-muted/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-primary md:text-xl">
           <Building className="h-5 w-5" />

@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { TooltipProvider } from '@/shared/components/ui/tooltip';
 import { Toaster } from '@/shared/components/ui/sonner';
 import { AuthProvider } from '@/shared/hooks/useAuth';
+import { ThemeProvider } from '@/shared/contexts/theme-context';
 import { registerServiceWorker } from './registerServiceWorker';
 
 // Initialize deviceId in localStorage if it doesn't exist
@@ -27,12 +28,14 @@ root.render(
         v7_relativeSplatPath: true,
       }}
     >
-      <TooltipProvider>
-        <AuthProvider>
-          <App />
-          <Toaster />
-        </AuthProvider>
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="light">
+        <TooltipProvider>
+          <AuthProvider>
+            <App />
+            <Toaster />
+          </AuthProvider>
+        </TooltipProvider>
+      </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

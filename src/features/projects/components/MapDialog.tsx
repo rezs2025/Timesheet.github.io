@@ -38,9 +38,9 @@ export const MapDialog: React.FC<MapDialogProps> = ({
     <Dialog>
       <DialogTrigger asChild>
         <Button 
-          variant="outline" 
+          variant="default" 
           size="sm" 
-          className="h-8 bg-primary text-white"
+          className="h-8"
         >
           <MapIcon className="h-3 w-3 mr-1" />
           View map

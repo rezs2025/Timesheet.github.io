@@ -3,6 +3,7 @@ import { SidebarTrigger } from "@/shared/components/ui/sidebar"
 import { useLocation } from "react-router-dom"
 import { useAuth } from "@/shared/hooks/useAuth"
 import { getRouteNameByPath } from "@/shared/constants/routes"
+import { ThemeToggle } from "@/shared/components/theme-toggle"
 
 export function SiteHeader() {
   const location = useLocation()
@@ -19,6 +20,9 @@ export function SiteHeader() {
           className="mx-2 data-[orientation=vertical]:h-4 shrink-0 md:block hidden"
         />
         <h1 className="text-base font-medium shrink-0 hidden md:block">{pageTitle}</h1>
+        <div className="ml-auto">
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   )
