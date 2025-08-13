@@ -17,15 +17,15 @@ npm run preview
 
 ## Project Architecture
 
-This is a **React TypeScript timesheet application** built with Vite, Firebase, and shadcn/ui components.
+This is a **React TypeScript timesheet application** built with Vite and shadcn/ui components.
 
 ### Technology Stack
 - **Frontend**: React 18.3.1 + TypeScript 5.8.3
 - **Build Tool**: Vite 6.3.5 with HMR
-- **Backend**: Firebase 9.22.0 (auth, database)
 - **Styling**: Tailwind CSS v4 + shadcn/ui (New York variant)
 - **Routing**: React Router DOM
 - **Forms**: React Hook Form + Zod validation
+- **State Management**: React Context for global state
 
 ### Codebase Structure
 
@@ -50,21 +50,21 @@ This is a **React TypeScript timesheet application** built with Vite, Firebase, 
 - `vite.config.ts` - Build configuration with path aliases (`@/` → `src/`)
 - `components.json` - shadcn/ui configuration (New York style)
 - `src/index.css` - Tailwind v4 setup with CSS custom properties for theming
-- `firebase/config.ts` - Firebase initialization
 
 ### Development Patterns
 - **Component Architecture**: Functional components with hooks
 - **Styling**: Tailwind utility classes with shadcn/ui component variants
 - **State Management**: React Hook Form for forms, React context for global state
-- **Authentication**: Firebase Auth with role-based access (admin/user)
+- **Authentication**: Custom auth implementation with role-based access (admin/user)
 - **Routing**: Route-based organization with protected routes
-- **Theming**: CSS custom properties supporting light/dark modes
+- **Theming**: CSS custom properties supporting light/dark modes with theme context
 
 ### Path Aliases
 - `@/` maps to `src/` directory (configured in vite.config.ts and tsconfig.json)
 - Use `@/shared/components/ui/button` instead of relative imports
 
-### Firebase Integration
-- Authentication service in `src/shared/services/`
-- Role-based access control throughout the application
+### Authentication & Features
+- Custom authentication service in `src/shared/services/`
+- Role-based access control throughout the application (admin/pm/employee)
+- Dark mode support with theme toggle in header
 - English language interface (timesheet application)
